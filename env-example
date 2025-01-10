@@ -1,0 +1,9 @@
+MY_SECRET_USERNAME = ''
+MY_SECRET_PASSWORD = ''
+TEXT_UTIL =  ''
+
+
+
+#####
+URL_INIT = 'https://qualitysistemas.com.br/intranet/index.php?conteudo=sac_tickets'
+
