@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>714</width>
-    <height>510</height>
+    <width>730</width>
+    <height>537</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -77,7 +77,7 @@
             <x>10</x>
             <y>10</y>
             <width>461</width>
-            <height>131</height>
+            <height>151</height>
            </rect>
           </property>
           <property name="title">
@@ -89,7 +89,7 @@
              <x>210</x>
              <y>10</y>
              <width>241</width>
-             <height>111</height>
+             <height>131</height>
             </rect>
            </property>
            <property name="title">
@@ -99,7 +99,7 @@
             <property name="geometry">
              <rect>
               <x>10</x>
-              <y>20</y>
+              <y>40</y>
               <width>111</width>
               <height>17</height>
              </rect>
@@ -115,7 +115,7 @@
             <property name="geometry">
              <rect>
               <x>10</x>
-              <y>40</y>
+              <y>60</y>
               <width>111</width>
               <height>17</height>
              </rect>
@@ -131,7 +131,7 @@
             <property name="geometry">
              <rect>
               <x>10</x>
-              <y>60</y>
+              <y>80</y>
               <width>111</width>
               <height>17</height>
              </rect>
@@ -147,7 +147,7 @@
             <property name="geometry">
              <rect>
               <x>10</x>
-              <y>80</y>
+              <y>100</y>
               <width>111</width>
               <height>17</height>
              </rect>
@@ -163,7 +163,7 @@
             <property name="geometry">
              <rect>
               <x>110</x>
-              <y>60</y>
+              <y>80</y>
               <width>111</width>
               <height>17</height>
              </rect>
@@ -179,7 +179,7 @@
             <property name="geometry">
              <rect>
               <x>110</x>
-              <y>80</y>
+              <y>100</y>
               <width>111</width>
               <height>17</height>
              </rect>
@@ -195,7 +195,7 @@
             <property name="geometry">
              <rect>
               <x>110</x>
-              <y>20</y>
+              <y>40</y>
               <width>111</width>
               <height>17</height>
              </rect>
@@ -211,7 +211,7 @@
             <property name="geometry">
              <rect>
               <x>110</x>
-              <y>40</y>
+              <y>60</y>
               <width>111</width>
               <height>17</height>
              </rect>
@@ -221,6 +221,22 @@
             </property>
             <property name="checked">
              <bool>true</bool>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="check_sys_desmarca_todos">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>20</y>
+              <width>111</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Desmarcar Todos</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
             </property>
            </widget>
           </widget>
@@ -240,7 +256,7 @@
             <bool>true</bool>
            </property>
           </widget>
-          <widget class="QWidget" name="">
+          <widget class="QWidget" name="layoutWidget">
            <property name="geometry">
             <rect>
              <x>10</x>
@@ -349,7 +365,7 @@ color: rgb(255, 0, 0);</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>714</width>
+     <width>730</width>
      <height>21</height>
     </rect>
    </property>
@@ -398,5 +414,134 @@ color: rgb(255, 0, 0);</string>
   </action>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>check_sys_desmarca_todos</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>check_sys_contabil</receiver>
+   <slot>toggle()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>274</x>
+     <y>69</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>276</x>
+     <y>88</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>check_sys_desmarca_todos</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>check_sys_compras</receiver>
+   <slot>toggle()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>293</x>
+     <y>69</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>283</x>
+     <y>114</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>check_sys_desmarca_todos</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>check_sys_licitacao</receiver>
+   <slot>toggle()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>303</x>
+     <y>73</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>260</x>
+     <y>133</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>check_sys_desmarca_todos</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>check_sys_arh</receiver>
+   <slot>toggle()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>313</x>
+     <y>65</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>258</x>
+     <y>152</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>check_sys_desmarca_todos</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>check_sys_siart</receiver>
+   <slot>toggle()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>308</x>
+     <y>72</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>351</x>
+     <y>95</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>check_sys_desmarca_todos</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>check_sys_docfacil</receiver>
+   <slot>toggle()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>320</x>
+     <y>68</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>375</x>
+     <y>111</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>check_sys_desmarca_todos</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>check_sys_solicitaoweb</receiver>
+   <slot>toggle()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>240</x>
+     <y>72</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>395</x>
+     <y>133</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>check_sys_desmarca_todos</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>check_sys_gecom</receiver>
+   <slot>toggle()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>234</x>
+     <y>66</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>370</x>
+     <y>151</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
