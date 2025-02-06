@@ -18,16 +18,6 @@ class MainWindow(QMainWindow,Ui_MainWindow):
         super(MainWindow, self).__init__()
         self = Ui_MainWindow()
         self.setupUi(self)
-        # self.actionConfigura_es.triggered.connect(self.open_config)
-  
-#     def open_config(self):
-#         self.config = CadastroAplicativos()
-#         self.config.show()
-
-# class CadastroAplicativos(QDialog,Ui_Form):
-#     def __init__(self) -> None:
-#         super().__init__(parent=None)
-#         self.setupUi(self)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

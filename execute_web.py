@@ -11,7 +11,7 @@ from webdriver_manager.microsoft import EdgeChromiumDriverManager # Import the E
 from datetime import datetime
 from time import sleep
 from text_for_close import text
-from random import choice
+from random import choice, randint
 from dotenv import dotenv_values
 
 config = dotenv_values(".env")
@@ -75,6 +75,7 @@ def _set_filter_ticket(driver):
     )
     filter_button.click()  
 
+    
 
 # def __alter_ticket(driver):
 #     # Wait until the element is loaded
@@ -122,16 +123,31 @@ def __handle_alert(driver):
         print(f"An error occurred: {e}")
 
 
+def __randon_system_closed(n_system:list = []):
+    """Gerador do sistema a ser fechado o ticket, gerado de forma aleatória.
+
+    Args:
+        n_system (list[int]): passado o número de sistemas que estão disponíveis para serem fechados.
+    """
+    try:
+        if len(n_system) == 0:
+            return choice(['2','3','4','5','125','73','7','45','61','8','9','11','82'])
+        else :
+            system = choice(n_system)
+            return system
+    except Exception as e:
+        print(f"An error occurred: {e}")
+    
 ## Method to alter ticket after close
 def __alter_ticket(driver):
     print("Alterando ticket")
-    sleep(5)
+    sleep(9)
     
     # 1. Set "cSistema" to the value "5"
     
     sistema_select_sistema = Select(driver.find_element(By.ID, "cSistema"))
     # Try to select by value
-    sistema_select_sistema.select_by_value("5")
+    sistema_select_sistema.select_by_value(__randon_system_closed())
     
     # 2. Check if "cResponsavel" is empty; if so, set it to the first option
     responsavel_select = Select(driver.find_element(By.ID, "cResponsavel"))
@@ -159,7 +175,7 @@ def __alter_ticket(driver):
 
 #   method to close ticket
 def __close_ticket(driver):
-    sleep(5)
+    sleep(9)
     
     # clicked bnt close ticket
     close_ticket_button = WebDriverWait(driver, 10).until(
@@ -184,17 +200,11 @@ def __close_ticket(driver):
         save_ticket_button.click()  
         __handle_alert(driver)
         
-        sleep(5)
+        sleep(9)
         
     except Exception as e:
         print(f"An error occurred: {e}")
     
-    
-        
-    
-
-        
-
 
 def get_data(driver):
     while True:
@@ -244,4 +254,4 @@ if __name__ == "__main__":
     main() # Call the main function
     # a = generate_text_close_ticket()
     # print(a)
-        
+      
