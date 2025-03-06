@@ -13,13 +13,18 @@ from time import sleep
 from text_for_close import text
 from random import choice, randint
 from dotenv import dotenv_values
+from database import get_data
+from config import USERNAME_INI, PASSWORD_INI, URL_INI
+# config = dotenv_values(".env")
 
-config = dotenv_values(".env")
+# # Load environment variables
+# URL = config['URL_INIT']
+# USERNAME = config['MY_SECRET_USERNAME']
+# PASSWORD = config['MY_SECRET_PASSWORD']
 
-# Load environment variables
-URL = config['URL_INIT']
-USERNAME = config['MY_SECRET_USERNAME']
-PASSWORD = config['MY_SECRET_PASSWORD']
+URL = URL_INI
+USERNAME = USERNAME_INI
+PASSWORD = PASSWORD_INI
 TIME_SLEEP = 5
 
 
@@ -151,43 +156,6 @@ def __handle_alert(driver):
         print(f"An error occurred: {e}")
 
 
-def check_table_has_rows(driver):
-    try:
-        # Wait until the table is loaded
-        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "tListaSac")))
-
-        # Get all rows in the tbody
-        rows = driver.find_elements(By.XPATH, "//table[@id='tListaSac']/tbody/tr")
-        
-        print(f"Found {len(rows)} rows.")
-        if len(rows) > 1:
-            print("Table has rows.")
-            return True
-        else:
-            print("Table does not have rows.")
-            return False
-    except Exception as e:
-        print(f"An error occurred while checking the table: {e}")
-        return False
-
-def access_linked_tickets_tab(driver):
-    try:
-        # Check if the div exists
-        if check_div_exists(driver, "boxAbasChamados"):
-            # Click on the "chamados vinculados" tab
-            linked_tickets_tab = driver.find_element(By.XPATH, "//a[@href=\"javascript:trocaAbaChamados('chamado');\" and @id='btAbaChamTic']")
-            linked_tickets_tab.click()
-            print("Clicked on the 'chamados vinculados' tab.")
-            
-            # Check if the table has rows
-            return check_table_has_rows(driver)
-        else:
-            print("Div 'boxAbasChamados' does not exist.")
-            return False
-    except Exception as e:
-        print(f"An error occurred while accessing the linked tickets tab: {e}")
-        return False
-
 def __randon_system_closed(n_system:list = []):
     """Gerador do sistema a ser fechado o ticket, gerado de forma aleatória.
 
@@ -210,12 +178,6 @@ def __alter_ticket(driver):
     
     try:
         # 1. Set "cSistema" to the value "5"
-        
-        if check_div_exists(driver, "boxAbasChamados"):
-            access_linked_tickets_tab(driver)
-            if check_table_has_rows(driver):
-                return            
-            
         
         sistema_select_sistema = Select(driver.find_element(By.ID, "cSistema"))
         # Try to select by value
@@ -307,10 +269,8 @@ def click_close_alert_button(driver):
         print(f"Error clicking the close alert button: {e}")
 
 def get_data(driver):
-    n_tickets = []
     while True:
         try:
-            
             # Wait until the table is loaded
             WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "tListaSac")))
 
@@ -325,25 +285,18 @@ def get_data(driver):
             for row in rows:
                 # Get the link (first <a> element) in the row
                 try: 
-                    print(f'Entrou no for\n {row}' )
-                    print(f"n_tickets  = {n_tickets}")
-                    
                     link_element = row.find_element(By.XPATH, ".//a[contains(@href, 'conteudo=sac_ticketaberto')]")
                     href = link_element.get_attribute("href")
                     
-                    if href in n_tickets:
-                        continue
-                    
                     # Execute your function (e.g., open the link)
                     print(f"Processing: {href}")
-                    n_tickets.append(href)
                     
                     driver.get(href)  # Navigate to the link
                     __alter_ticket(driver)  # Call the function to alter the ticket
                     
                     # Return to the main page or perform other necessary actions before the next iteration
                     driver.back()  # Go back to the previous page
-                    
+    
                     break  # Proceed to the next row
                 except Exception as e:
                     print(f"Ocorreu um erro no processo for row in rows: {e}")
@@ -362,12 +315,12 @@ def main():
         print("Login success")
         sleep(TIME_SLEEP)
         if not check_div_exists(driver, "modal-chamados-vinculados-id"):
-            # _set_filter_ticket(driver)
+            _set_filter_ticket(driver)
             get_data(driver)
         else:
             group = _group_ticket(driver)
             if group:
-                # _set_filter_ticket(driver)
+                _set_filter_ticket(driver)
                 get_data(driver)    
     else:
         print("Login failed")
