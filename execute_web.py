@@ -23,7 +23,8 @@ PASSWORD = config['MY_SECRET_PASSWORD']
 TIME_SLEEP = 5
 
 
-
+def _close_system_ticket():
+    exit(0)
 
 def open_browser():
     # Set the path to the edgedriver
@@ -145,7 +146,7 @@ def __handle_alert(driver):
         
         # Clica no botão "OK" (ou similar) no alerta
         alert.accept()
-        print("Alert accepted.")
+        print("Alerta tratado com sucesso.")
         
     except Exception as e:
         print(f"An error occurred: {e}")
@@ -160,11 +161,12 @@ def check_table_has_rows(driver):
         rows = driver.find_elements(By.XPATH, "//table[@id='tListaSac']/tbody/tr")
         
         print(f"Found {len(rows)} rows.")
+        
         if len(rows) > 1:
-            print("Table has rows.")
+            print("Existe Linhas na tabela.")
             return True
         else:
-            print("Table does not have rows.")
+            print("Não existe linhas na tabela.")
             return False
     except Exception as e:
         print(f"An error occurred while checking the table: {e}")
@@ -177,12 +179,12 @@ def access_linked_tickets_tab(driver):
             # Click on the "chamados vinculados" tab
             linked_tickets_tab = driver.find_element(By.XPATH, "//a[@href=\"javascript:trocaAbaChamados('chamado');\" and @id='btAbaChamTic']")
             linked_tickets_tab.click()
-            print("Clicked on the 'chamados vinculados' tab.")
+            print("Clicado na aba chamados vinculados")
             
             # Check if the table has rows
             return check_table_has_rows(driver)
         else:
-            print("Div 'boxAbasChamados' does not exist.")
+            print("Não existe chamados vinculados")
             return False
     except Exception as e:
         print(f"An error occurred while accessing the linked tickets tab: {e}")
@@ -216,31 +218,34 @@ def __alter_ticket(driver):
             if check_table_has_rows(driver):
                 return            
             
-        
-        sistema_select_sistema = Select(driver.find_element(By.ID, "cSistema"))
-        # Try to select by value
-        sistema_select_sistema.select_by_value(__randon_system_closed())
-        
-        # 2. Check if "cResponsavel" is empty; if so, set it to the first option
-        responsavel_select = Select(driver.find_element(By.ID, "cResponsavel"))
-        if responsavel_select.first_selected_option.get_attribute("value") == "0":  # If "responsável" is selected
-            responsavel_select.select_by_index(1)  # Select the first available option
-        
-        # 3. Set "sPrevisao" to the current date in "dd/mm/yyyy" format
-        previsao_input = driver.find_element(By.ID, "sPrevisao")
-        current_date = datetime.now().strftime("%d/%m/%Y")
-        previsao_input.clear()  # Clear any existing value
-        previsao_input.send_keys(current_date)  # Set the current date
-        
-        # 4. Click the "Salvar" button
-        
-        update_ticket_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.ID, "btAtualizar"))
-        )
-        update_ticket_button.click()  
-        
-        __handle_alert(driver)
-        
+        try: 
+            sistema_select_sistema = Select(driver.find_element(By.ID, "cSistema"))
+            # Try to select by value
+            sistema_select_sistema.select_by_value(__randon_system_closed())
+            
+            # 2. Check if "cResponsavel" is empty; if so, set it to the first option
+            responsavel_select = Select(driver.find_element(By.ID, "cResponsavel"))
+            if responsavel_select.first_selected_option.get_attribute("value") == "0":  # If "responsável" is selected
+                responsavel_select.select_by_index(1)  # Select the first available option
+            
+            # 3. Set "sPrevisao" to the current date in "dd/mm/yyyy" format
+            previsao_input = driver.find_element(By.ID, "sPrevisao")
+            current_date = datetime.now().strftime("%d/%m/%Y")
+            previsao_input.clear()  # Clear any existing value
+            previsao_input.send_keys(current_date)  # Set the current date
+            
+            # 4. Click the "Salvar" button
+            
+            update_ticket_button = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.ID, "btAtualizar"))
+            )
+            update_ticket_button.click()  
+            
+            __handle_alert(driver)
+        except Exception as e:
+            print(f"Ocorreu um erro na função(__alter_ticket) : {e} \n {e.__traceback__} \n {e.__cause__} \n {e.__context__} ")
+            
+            
         __close_ticket(driver)
     
     except Exception as e:
@@ -285,13 +290,13 @@ def check_div_exists(driver, div_id):
     try:
         elements = driver.find_elements(By.ID, div_id)
         if len(elements) > 0:
-            print(f"Div with ID '{div_id}' exists.")
+            # print(f"Div with ID '{div_id}' exists.")
             return True
         else:
-            print(f"Div with ID '{div_id}' does not exist.")
+            # print(f"Div with ID '{div_id}' does not exist.")
             return False
     except NoSuchElementException:
-        print(f"Div with ID '{div_id}' does not exist.")
+        # print(f"Div with ID '{div_id}' does not exist.")
         return False
     
 def click_close_alert_button(driver):
@@ -317,34 +322,44 @@ def get_data(driver):
             # Get all rows in the tbody
             rows = driver.find_elements(By.XPATH, "//table[@id='tListaSac']/tbody/tr")
             
-            print(f"Found {len(rows)} rows.")
+            # print(f"Found {len(rows)} rows.")
             if len(rows) <= 1:
-                print("No rows found. Exiting.")
+                print("Não existe linhas na tabela.")
+                _close_system_ticket()
                 break
             
             for row in rows:
                 # Get the link (first <a> element) in the row
+                print(f"{len(n_tickets)} - {len(rows)}")  
                 try: 
-                    print(f'Entrou no for\n {row}' )
-                    print(f"n_tickets  = {n_tickets}")
+                    print(f'Entrou no for' )
+                    # print(f"n_tickets  = {n_tickets}")
                     
                     link_element = row.find_element(By.XPATH, ".//a[contains(@href, 'conteudo=sac_ticketaberto')]")
                     href = link_element.get_attribute("href")
                     
                     if href in n_tickets:
-                        continue
-                    
-                    # Execute your function (e.g., open the link)
-                    print(f"Processing: {href}")
-                    n_tickets.append(href)
-                    
-                    driver.get(href)  # Navigate to the link
-                    __alter_ticket(driver)  # Call the function to alter the ticket
-                    
-                    # Return to the main page or perform other necessary actions before the next iteration
-                    driver.back()  # Go back to the previous page
-                    
-                    break  # Proceed to the next row
+                        if len(rows) == len(n_tickets):
+                            print("Todos os Tickets Foram Processados")
+                            _close_system_ticket()
+                            break
+                        else:
+                            continue
+                        
+                        
+                    else: 
+                        # Execute your function (e.g., open the link)
+                        print(f"Processing: {href}")
+                        
+                        
+                        driver.get(href)  # Navigate to the link
+                        __alter_ticket(driver)  # Call the function to alter the ticket
+                        n_tickets.append(href)
+                        # Return to the main page or perform other necessary actions before the next iteration
+                        driver.back()  # Go back to the previous page
+                        
+                        break  # Proceed to the next row
+                      
                 except Exception as e:
                     print(f"Ocorreu um erro no processo for row in rows: {e}")
                     if 'no such element'.lower() in str(e):
