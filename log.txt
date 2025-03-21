@@ -1,0 +1,241 @@
+Iniciando processo... 2025-03-21 16:59:18.478759
+Login success
+0 - 7
+Entrou no for
+Processing: https://qualitysistemas.com.br/intranet/index.php?conteudo=sac_ticketaberto&id=111854
+Alterando ticket
+Alerta tratado com sucesso.
+Alerta tratado com sucesso.
+1 - 6
+Entrou no for
+Processing: https://qualitysistemas.com.br/intranet/index.php?conteudo=sac_ticketaberto&id=111598
+Alterando ticket
+Clicado na aba chamados vinculados
+Found 2 rows.
+Existe Linhas na tabela.
+Found 2 rows.
+Existe Linhas na tabela.
+2 - 6
+Entrou no for
+2 - 6
+Entrou no for
+Processing: https://qualitysistemas.com.br/intranet/index.php?conteudo=sac_ticketaberto&id=110374
+Alterando ticket
+Clicado na aba chamados vinculados
+Found 2 rows.
+Existe Linhas na tabela.
+Found 2 rows.
+Existe Linhas na tabela.
+3 - 6
+Entrou no for
+3 - 6
+Entrou no for
+3 - 6
+Entrou no for
+Processing: https://qualitysistemas.com.br/intranet/index.php?conteudo=sac_ticketaberto&id=100872
+Alterando ticket
+Clicado na aba chamados vinculados
+Found 2 rows.
+Existe Linhas na tabela.
+Found 2 rows.
+Existe Linhas na tabela.
+4 - 6
+Entrou no for
+4 - 6
+Entrou no for
+4 - 6
+Entrou no for
+4 - 6
+Entrou no for
+Processing: https://qualitysistemas.com.br/intranet/index.php?conteudo=sac_ticketaberto&id=100870
+Alterando ticket
+Clicado na aba chamados vinculados
+Found 2 rows.
+Existe Linhas na tabela.
+Found 2 rows.
+Existe Linhas na tabela.
+5 - 6
+Entrou no for
+5 - 6
+Entrou no for
+5 - 6
+Entrou no for
+5 - 6
+Entrou no for
+5 - 6
+Entrou no for
+Processing: https://qualitysistemas.com.br/intranet/index.php?conteudo=sac_ticketaberto&id=98245
+Alterando ticket
+Clicado na aba chamados vinculados
+Found 2 rows.
+Existe Linhas na tabela.
+Found 2 rows.
+Existe Linhas na tabela.
+6 - 6
+Entrou no for
+Todos os Tickets Foram Processados 2025-03-21 17:00:17.411144
+Iniciando processo... 2025-03-21 16:59:18.478759
+Login success
+0 - 7
+Entrou no for
+Processing: https://qualitysistemas.com.br/intranet/index.php?conteudo=sac_ticketaberto&id=111854
+Alterando ticket
+Alerta tratado com sucesso.
+Alerta tratado com sucesso.
+1 - 6
+Entrou no for
+Processing: https://qualitysistemas.com.br/intranet/index.php?conteudo=sac_ticketaberto&id=111598
+Alterando ticket
+Clicado na aba chamados vinculados
+Found 2 rows.
+Existe Linhas na tabela.
+Found 2 rows.
+Existe Linhas na tabela.
+2 - 6
+Entrou no for
+2 - 6
+Entrou no for
+Processing: https://qualitysistemas.com.br/intranet/index.php?conteudo=sac_ticketaberto&id=110374
+Alterando ticket
+Clicado na aba chamados vinculados
+Found 2 rows.
+Existe Linhas na tabela.
+Found 2 rows.
+Existe Linhas na tabela.
+3 - 6
+Entrou no for
+3 - 6
+Entrou no for
+3 - 6
+Entrou no for
+Processing: https://qualitysistemas.com.br/intranet/index.php?conteudo=sac_ticketaberto&id=100872
+Alterando ticket
+Clicado na aba chamados vinculados
+Found 2 rows.
+Existe Linhas na tabela.
+Found 2 rows.
+Existe Linhas na tabela.
+4 - 6
+Entrou no for
+4 - 6
+Entrou no for
+4 - 6
+Entrou no for
+4 - 6
+Entrou no for
+Processing: https://qualitysistemas.com.br/intranet/index.php?conteudo=sac_ticketaberto&id=100870
+Alterando ticket
+Clicado na aba chamados vinculados
+Found 2 rows.
+Existe Linhas na tabela.
+Found 2 rows.
+Existe Linhas na tabela.
+5 - 6
+Entrou no for
+5 - 6
+Entrou no for
+5 - 6
+Entrou no for
+5 - 6
+Entrou no for
+5 - 6
+Entrou no for
+Processing: https://qualitysistemas.com.br/intranet/index.php?conteudo=sac_ticketaberto&id=98245
+Alterando ticket
+Clicado na aba chamados vinculados
+Found 2 rows.
+Existe Linhas na tabela.
+Found 2 rows.
+Existe Linhas na tabela.
+6 - 6
+Entrou no for
+Todos os Tickets Foram Processados 2025-03-21 17:00:17.411144
+Iniciando processo... 2025-03-21 17:01:11.076797
+Login success
+0 - 6
+Entrou no for
+Processing: https://qualitysistemas.com.br/intranet/index.php?conteudo=sac_ticketaberto&id=111598
+Alterando ticket
+Clicado na aba chamados vinculados
+Found 2 rows.
+Existe Linhas na tabela.
+Found 2 rows.
+Existe Linhas na tabela.
+1 - 6
+Entrou no for
+1 - 6
+Entrou no for
+Processing: https://qualitysistemas.com.br/intranet/index.php?conteudo=sac_ticketaberto&id=110374
+Alterando ticket
+Clicado na aba chamados vinculados
+Found 2 rows.
+Existe Linhas na tabela.
+Found 2 rows.
+Existe Linhas na tabela.
+2 - 6
+Entrou no for
+2 - 6
+Entrou no for
+2 - 6
+Entrou no for
+Processing: https://qualitysistemas.com.br/intranet/index.php?conteudo=sac_ticketaberto&id=100872
+Alterando ticket
+Clicado na aba chamados vinculados
+Found 2 rows.
+Existe Linhas na tabela.
+Found 2 rows.
+Existe Linhas na tabela.
+3 - 6
+Entrou no for
+3 - 6
+Entrou no for
+3 - 6
+Entrou no for
+3 - 6
+Entrou no for
+Processing: https://qualitysistemas.com.br/intranet/index.php?conteudo=sac_ticketaberto&id=100870
+Alterando ticket
+Clicado na aba chamados vinculados
+Found 2 rows.
+Existe Linhas na tabela.
+Found 2 rows.
+Existe Linhas na tabela.
+4 - 6
+Entrou no for
+4 - 6
+Entrou no for
+4 - 6
+Entrou no for
+4 - 6
+Entrou no for
+4 - 6
+Entrou no for
+Processing: https://qualitysistemas.com.br/intranet/index.php?conteudo=sac_ticketaberto&id=98245
+Alterando ticket
+Clicado na aba chamados vinculados
+Found 2 rows.
+Existe Linhas na tabela.
+Found 2 rows.
+Existe Linhas na tabela.
+5 - 6
+Entrou no for
+5 - 6
+Entrou no for
+5 - 6
+Entrou no for
+5 - 6
+Entrou no for
+5 - 6
+Entrou no for
+5 - 6
+Entrou no for
+Processing: https://qualitysistemas.com.br/intranet/index.php?conteudo=sac_ticketaberto&id=98243
+Alterando ticket
+Clicado na aba chamados vinculados
+Found 2 rows.
+Existe Linhas na tabela.
+Found 2 rows.
+Existe Linhas na tabela.
+6 - 6
+Entrou no for
+Todos os Tickets Foram Processados 2025-03-21 17:02:00.175877

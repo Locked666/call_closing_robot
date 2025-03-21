@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>730</width>
+    <width>763</width>
     <height>537</height>
    </rect>
   </property>
@@ -56,7 +56,7 @@
          <property name="minimumSize">
           <size>
            <width>712</width>
-           <height>161</height>
+           <height>176</height>
           </size>
          </property>
          <property name="maximumSize">
@@ -72,18 +72,24 @@
           <enum>QFrame::Raised</enum>
          </property>
          <widget class="QGroupBox" name="groupBox">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>10</y>
+            <y>0</y>
             <width>461</width>
-            <height>151</height>
+            <height>161</height>
            </rect>
           </property>
           <property name="title">
            <string>Parametros de Execução</string>
           </property>
           <widget class="QGroupBox" name="groupBox_2">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="geometry">
             <rect>
              <x>210</x>
@@ -240,59 +246,72 @@
             </property>
            </widget>
           </widget>
-          <widget class="QCheckBox" name="check_param_browser">
-           <property name="geometry">
-            <rect>
-             <x>10</x>
-             <y>70</y>
-             <width>111</width>
-             <height>17</height>
-            </rect>
-           </property>
-           <property name="text">
-            <string>Ocultar Navegador</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
-          <widget class="QWidget" name="layoutWidget">
+          <widget class="QWidget" name="">
            <property name="geometry">
             <rect>
              <x>10</x>
              <y>20</y>
-             <width>111</width>
-             <height>41</height>
+             <width>120</width>
+             <height>85</height>
             </rect>
            </property>
-           <layout class="QVBoxLayout" name="verticalLayout_4">
+           <layout class="QVBoxLayout" name="verticalLayout_5">
             <item>
-             <widget class="QLabel" name="label_2">
-              <property name="text">
-               <string>Data de Fechamento</string>
+             <layout class="QVBoxLayout" name="verticalLayout_4">
+              <property name="spacing">
+               <number>9</number>
               </property>
-             </widget>
+              <property name="leftMargin">
+               <number>9</number>
+              </property>
+              <property name="topMargin">
+               <number>9</number>
+              </property>
+              <property name="rightMargin">
+               <number>9</number>
+              </property>
+              <property name="bottomMargin">
+               <number>9</number>
+              </property>
+              <item>
+               <widget class="QLabel" name="label_2">
+                <property name="text">
+                 <string>Data de Fechamento</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QDateEdit" name="date_execucao">
+                <property name="wrapping">
+                 <bool>false</bool>
+                </property>
+                <property name="buttonSymbols">
+                 <enum>QAbstractSpinBox::UpDownArrows</enum>
+                </property>
+                <property name="accelerated">
+                 <bool>false</bool>
+                </property>
+                <property name="calendarPopup">
+                 <bool>true</bool>
+                </property>
+                <property name="date">
+                 <date>
+                  <year>2025</year>
+                  <month>1</month>
+                  <day>10</day>
+                 </date>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
             <item>
-             <widget class="QDateEdit" name="date_execucao">
-              <property name="wrapping">
-               <bool>false</bool>
+             <widget class="QCheckBox" name="check_param_browser">
+              <property name="text">
+               <string>Ocultar Navegador</string>
               </property>
-              <property name="buttonSymbols">
-               <enum>QAbstractSpinBox::UpDownArrows</enum>
-              </property>
-              <property name="accelerated">
-               <bool>false</bool>
-              </property>
-              <property name="calendarPopup">
+              <property name="checked">
                <bool>true</bool>
-              </property>
-              <property name="date">
-               <date>
-                <year>2025</year>
-                <month>1</month>
-                <day>10</day>
-               </date>
               </property>
              </widget>
             </item>
@@ -303,9 +322,9 @@
           <property name="geometry">
            <rect>
             <x>480</x>
-            <y>10</y>
-            <width>181</width>
-            <height>91</height>
+            <y>0</y>
+            <width>241</width>
+            <height>101</height>
            </rect>
           </property>
           <property name="styleSheet">
@@ -332,7 +351,17 @@ color: rgb(255, 0, 0);</string>
            </rect>
           </property>
           <property name="styleSheet">
-           <string notr="true">background-color: rgb(170, 255, 0);</string>
+           <string notr="true">QPushButton{
+font: 75 italic 10pt &quot;Sitka Subheading&quot;;
+background-color: rgb(170, 255, 0);
+}
+
+QPushButton:pressed {
+background-color: rgb(255, 0, 0);
+	font: 10pt &quot;Nirmala UI&quot;;
+
+}
+</string>
           </property>
           <property name="text">
            <string>Executar</string>
@@ -350,7 +379,27 @@ color: rgb(255, 0, 0);</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
-           <widget class="QListView" name="listView"/>
+           <widget class="QPlainTextEdit" name="plainTextEdit">
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+            <property name="centerOnScroll">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="bnt_log">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Salvar Log</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -365,7 +414,7 @@ color: rgb(255, 0, 0);</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>730</width>
+     <width>763</width>
      <height>21</height>
     </rect>
    </property>
