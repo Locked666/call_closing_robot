@@ -8,6 +8,7 @@ from selenium.webdriver.support.ui import WebDriverWait,Select
 from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.microsoft import EdgeChromiumDriverManager # Import the Edge driver manager
+from PySide6.QtCore import QObject, Signal
 from datetime import datetime
 from time import sleep
 from text_for_close import text
@@ -21,6 +22,24 @@ URL = config['URL_INIT']
 USERNAME = config['MY_SECRET_USERNAME']
 PASSWORD = config['MY_SECRET_PASSWORD']
 TIME_SLEEP = 5
+
+class WorkerLogger(QObject):
+    """
+    Classe simples para substituir os prints e enviar mensagens para a UI
+    """
+    log_signal = Signal(str)  # Sinal que será conectado à UI
+    
+    def log(self, message):
+        """Método para log que substitui o print"""
+        self.log_signal.emit(str(message))
+        
+    def __call__(self, message):
+        """Permite usar a instância como função"""
+        self.log(message)
+
+# Cria uma instância global que será usada no lugar dos prints
+work = WorkerLogger()
+
 
 
 def _close_system_ticket():
@@ -60,7 +79,7 @@ def login(driver):
         password.send_keys(Keys.RETURN)
         return True
     except Exception as e:
-        print(e)
+        work.log(e)
         driver.quit()
             
 def _set_filter_ticket(driver):
@@ -91,7 +110,7 @@ def _group_ticket(driver):
             try:
                 # Click the button
                 button.click()
-                print(f"Clicked button with ID: {button.get_attribute('id')}")
+                work.log(f"Clicked button with ID: {button.get_attribute('id')}")
                 
                 # Handle any alerts that may appear
                 __handle_alert(driver)
@@ -99,12 +118,12 @@ def _group_ticket(driver):
                 # Wait for a short period to ensure the action is completed
                 sleep(1)
             except Exception as e:
-                print(f"Error clicking button with ID {button.get_attribute('id')}: {e}")
+                work.log(f"Error clicking button with ID {button.get_attribute('id')}: {e}")
                 continue
         click_close_alert_button(driver)
         return True    
     except Exception as e:
-        print(f"Error in _group_ticket: {e}")
+        work.log(f"Error in _group_ticket: {e}")
 
 # def __alter_ticket(driver):
 #     # Wait until the element is loaded
@@ -120,7 +139,7 @@ def _group_ticket(driver):
 #         # Try to select by value
 #         sistema_select_sistema.select_by_value("5")
 #     except:
-#         print("Option with value '5' not found. Trying to select by visible text.")
+#         work.log("Option with value '5' not found. Trying to select by visible text.")
 #         # If value "5" is not found, try selecting by visible text
     
 #     # 2. Check if "cResponsavel" is empty; if so, set it to the first option
@@ -146,10 +165,10 @@ def __handle_alert(driver):
         
         # Clica no botão "OK" (ou similar) no alerta
         alert.accept()
-        print("Alerta tratado com sucesso.")
+        work.log("Alerta tratado com sucesso.")
         
     except Exception as e:
-        print(f"An error occurred: {e}")
+        work.log(f"An error occurred: {e}")
 
 
 def check_table_has_rows(driver):
@@ -160,16 +179,16 @@ def check_table_has_rows(driver):
         # Get all rows in the tbody
         rows = driver.find_elements(By.XPATH, "//table[@id='tListaSac']/tbody/tr")
         
-        print(f"Found {len(rows)} rows.")
+        work.log(f"Found {len(rows)} rows.")
         
         if len(rows) > 1:
-            print("Existe Linhas na tabela.")
+            work.log("Existe Linhas na tabela.")
             return True
         else:
-            print("Não existe linhas na tabela.")
+            work.log("Não existe linhas na tabela.")
             return False
     except Exception as e:
-        print(f"An error occurred while checking the table: {e}")
+        work.log(f"An error occurred while checking the table: {e}")
         return False
 
 def access_linked_tickets_tab(driver):
@@ -179,15 +198,15 @@ def access_linked_tickets_tab(driver):
             # Click on the "chamados vinculados" tab
             linked_tickets_tab = driver.find_element(By.XPATH, "//a[@href=\"javascript:trocaAbaChamados('chamado');\" and @id='btAbaChamTic']")
             linked_tickets_tab.click()
-            print("Clicado na aba chamados vinculados")
+            work.log("Clicado na aba chamados vinculados")
             
             # Check if the table has rows
             return check_table_has_rows(driver)
         else:
-            print("Não existe chamados vinculados")
+            work.log("Não existe chamados vinculados")
             return False
     except Exception as e:
-        print(f"An error occurred while accessing the linked tickets tab: {e}")
+        work.log(f"An error occurred while accessing the linked tickets tab: {e}")
         return False
 
 def __randon_system_closed(n_system:list = []):
@@ -203,11 +222,11 @@ def __randon_system_closed(n_system:list = []):
             system = choice(n_system)
             return system
     except Exception as e:
-        print(f"An error occurred: {e}")
+        work.log(f"An error occurred: {e}")
     
 ## Method to alter ticket after close
 def __alter_ticket(driver):
-    print("Alterando ticket")
+    work.log("Alterando ticket")
     sleep(TIME_SLEEP)
     
     try:
@@ -243,13 +262,13 @@ def __alter_ticket(driver):
             
             __handle_alert(driver)
         except Exception as e:
-            print(f"Ocorreu um erro na função(__alter_ticket) : {e} \n {e.__traceback__} \n {e.__cause__} \n {e.__context__} ")
+            work.log(f"Ocorreu um erro na função(__alter_ticket) : {e} \n {e.__traceback__} \n {e.__cause__} \n {e.__context__} ")
             
             
         __close_ticket(driver)
     
     except Exception as e:
-        print(f"Ocorreu um erro na função(__alter_ticket) : {e} \n {e.__traceback__} \n {e.__cause__} \n {e.__context__} ")
+        work.log(f"Ocorreu um erro na função(__alter_ticket) : {e} \n {e.__traceback__} \n {e.__cause__} \n {e.__context__} ")
          
     
     # driver.quit()
@@ -284,19 +303,19 @@ def __close_ticket(driver):
         sleep(TIME_SLEEP)
         
     except Exception as e:
-        print(f"Ocorreu um erro na funcção (__close_ticket): {e} \n {e.__traceback__} \n {e.__cause__} \n {e.__context__} ")
+        work.log(f"Ocorreu um erro na funcção (__close_ticket): {e} \n {e.__traceback__} \n {e.__cause__} \n {e.__context__} ")
 
 def check_div_exists(driver, div_id):
     try:
         elements = driver.find_elements(By.ID, div_id)
         if len(elements) > 0:
-            # print(f"Div with ID '{div_id}' exists.")
+            # work.log(f"Div with ID '{div_id}' exists.")
             return True
         else:
-            # print(f"Div with ID '{div_id}' does not exist.")
+            # work.log(f"Div with ID '{div_id}' does not exist.")
             return False
     except NoSuchElementException:
-        # print(f"Div with ID '{div_id}' does not exist.")
+        # work.log(f"Div with ID '{div_id}' does not exist.")
         return False
     
 def click_close_alert_button(driver):
@@ -307,9 +326,9 @@ def click_close_alert_button(driver):
         )
         # Click the button
         close_alert_button.click()
-        print("Clicked the close alert button.")
+        work.log("Clicked the close alert button.")
     except Exception as e:
-        print(f"Error clicking the close alert button: {e}")
+        work.log(f"Error clicking the close alert button: {e}")
 
 def get_data(driver):
     n_tickets = []
@@ -322,25 +341,25 @@ def get_data(driver):
             # Get all rows in the tbody
             rows = driver.find_elements(By.XPATH, "//table[@id='tListaSac']/tbody/tr")
             
-            # print(f"Found {len(rows)} rows.")
+            # work.log(f"Found {len(rows)} rows.")
             if len(rows) <= 1:
-                print("Não existe linhas na tabela.")
+                work.log("Não existe linhas na tabela.")
                 _close_system_ticket()
                 break
             
             for row in rows:
                 # Get the link (first <a> element) in the row
-                print(f"{len(n_tickets)} - {len(rows)}")  
+                work.log(f"{len(n_tickets)} - {len(rows)}")  
                 try: 
-                    print(f'Entrou no for' )
-                    # print(f"n_tickets  = {n_tickets}")
+                    work.log(f'Entrou no for' )
+                    # work.log(f"n_tickets  = {n_tickets}")
                     
                     link_element = row.find_element(By.XPATH, ".//a[contains(@href, 'conteudo=sac_ticketaberto')]")
                     href = link_element.get_attribute("href")
                     
                     if href in n_tickets:
                         if len(rows) == len(n_tickets):
-                            print("Todos os Tickets Foram Processados")
+                            work.log("Todos os Tickets Foram Processados")
                             _close_system_ticket()
                             break
                         else:
@@ -349,7 +368,7 @@ def get_data(driver):
                         
                     else: 
                         # Execute your function (e.g., open the link)
-                        print(f"Processing: {href}")
+                        work.log(f"Processing: {href}")
                         
                         
                         driver.get(href)  # Navigate to the link
@@ -361,12 +380,12 @@ def get_data(driver):
                         break  # Proceed to the next row
                       
                 except Exception as e:
-                    print(f"Ocorreu um erro no processo for row in rows: {e}")
+                    work.log(f"Ocorreu um erro no processo for row in rows: {e}")
                     if 'no such element'.lower() in str(e):
                         break
                 
         except Exception as e:
-            print(f"Ocorreu um erro no laço de repetição while: {e} \n {e.__traceback__} \n {e.__cause__} \n {e.__context__} ")
+            work.log(f"Ocorreu um erro no laço de repetição while: {e} \n {e.__traceback__} \n {e.__cause__} \n {e.__context__} ")
             continue
 
 
@@ -374,7 +393,7 @@ def main():
     driver = open_browser()
     driver.get(URL)
     if login(driver):
-        print("Login success")
+        work.log("Login success")
         sleep(TIME_SLEEP)
         if not check_div_exists(driver, "modal-chamados-vinculados-id"):
             # _set_filter_ticket(driver)
@@ -385,35 +404,13 @@ def main():
                 # _set_filter_ticket(driver)
                 get_data(driver)    
     else:
-        print("Login failed")
+        work.log("Login failed")
     driver.quit()
-
-
-def start_process_ui( USERNAME,PASSWORD,URL, SYSTEMS):
-    driver = open_browser()
-    driver.get(URL)
-    if login(driver):
-        print("Login success")
-        sleep(TIME_SLEEP)
-        if not check_div_exists(driver, "modal-chamados-vinculados-id"):
-            _set_filter_ticket(driver)
-            get_data(driver)
-        else:
-            group = _group_ticket(driver)
-            if group:
-                _set_filter_ticket(driver)
-                get_data(driver)    
-    else:
-        print("Login failed")
-    driver.quit()
-    
-# Example of how to use the main function:
-# main()
 
     
 if __name__ == "__main__":
     # get_data()  # Call the function to get the data
     main() # Call the main function
     # a = generate_text_close_ticket()
-    # print(a)
+    # work.log(a)
       

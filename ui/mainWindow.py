@@ -17,15 +17,16 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
 from PySide6.QtWidgets import (QAbstractSpinBox, QApplication, QCheckBox, QDateEdit,
-    QFrame, QGroupBox, QLabel, QMainWindow,
-    QMenu, QMenuBar, QPlainTextEdit, QPushButton,
-    QSizePolicy, QStatusBar, QVBoxLayout, QWidget)
+    QFrame, QGroupBox, QHBoxLayout, QLabel,
+    QMainWindow, QMenu, QMenuBar, QPlainTextEdit,
+    QPushButton, QSizePolicy, QStatusBar, QVBoxLayout,
+    QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(763, 537)
+        MainWindow.resize(763, 551)
         self.actionRespostas = QAction(MainWindow)
         self.actionRespostas.setObjectName(u"actionRespostas")
         self.actionSistemas = QAction(MainWindow)
@@ -97,22 +98,22 @@ class Ui_MainWindow(object):
         self.check_sys_desmarca_todos.setObjectName(u"check_sys_desmarca_todos")
         self.check_sys_desmarca_todos.setGeometry(QRect(10, 20, 111, 17))
         self.check_sys_desmarca_todos.setChecked(False)
-        self.widget = QWidget(self.groupBox)
-        self.widget.setObjectName(u"widget")
-        self.widget.setGeometry(QRect(10, 20, 120, 85))
-        self.verticalLayout_5 = QVBoxLayout(self.widget)
+        self.layoutWidget = QWidget(self.groupBox)
+        self.layoutWidget.setObjectName(u"layoutWidget")
+        self.layoutWidget.setGeometry(QRect(10, 20, 120, 85))
+        self.verticalLayout_5 = QVBoxLayout(self.layoutWidget)
         self.verticalLayout_5.setObjectName(u"verticalLayout_5")
         self.verticalLayout_5.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_4 = QVBoxLayout()
         self.verticalLayout_4.setSpacing(9)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
         self.verticalLayout_4.setContentsMargins(9, 9, 9, 9)
-        self.label_2 = QLabel(self.widget)
+        self.label_2 = QLabel(self.layoutWidget)
         self.label_2.setObjectName(u"label_2")
 
         self.verticalLayout_4.addWidget(self.label_2)
 
-        self.date_execucao = QDateEdit(self.widget)
+        self.date_execucao = QDateEdit(self.layoutWidget)
         self.date_execucao.setObjectName(u"date_execucao")
         self.date_execucao.setWrapping(False)
         self.date_execucao.setButtonSymbols(QAbstractSpinBox.UpDownArrows)
@@ -125,7 +126,7 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_5.addLayout(self.verticalLayout_4)
 
-        self.check_param_browser = QCheckBox(self.widget)
+        self.check_param_browser = QCheckBox(self.layoutWidget)
         self.check_param_browser.setObjectName(u"check_param_browser")
         self.check_param_browser.setChecked(True)
 
@@ -168,11 +169,22 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_3.addWidget(self.plainTextEdit)
 
+        self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.bnt_log = QPushButton(self.frame_3)
         self.bnt_log.setObjectName(u"bnt_log")
         self.bnt_log.setMinimumSize(QSize(0, 30))
 
-        self.verticalLayout_3.addWidget(self.bnt_log)
+        self.horizontalLayout.addWidget(self.bnt_log)
+
+        self.bnt_clear_log = QPushButton(self.frame_3)
+        self.bnt_clear_log.setObjectName(u"bnt_clear_log")
+        self.bnt_clear_log.setMinimumSize(QSize(0, 30))
+
+        self.horizontalLayout.addWidget(self.bnt_clear_log)
+
+
+        self.verticalLayout_3.addLayout(self.horizontalLayout)
 
 
         self.verticalLayout_2.addWidget(self.frame_3)
@@ -237,6 +249,7 @@ class Ui_MainWindow(object):
         self.label.setText(QCoreApplication.translate("MainWindow", u"Execute com consci\u00eancia, lebresse, n\u00e3o existe retorno. ", None))
         self.pushButton.setText(QCoreApplication.translate("MainWindow", u"Executar", None))
         self.bnt_log.setText(QCoreApplication.translate("MainWindow", u"Salvar Log", None))
+        self.bnt_clear_log.setText(QCoreApplication.translate("MainWindow", u"Apagar Log", None))
         self.menuCadastro.setTitle(QCoreApplication.translate("MainWindow", u"Cadastro", None))
         self.menuSistema.setTitle(QCoreApplication.translate("MainWindow", u"Sistema", None))
         self.menuExecus_o.setTitle(QCoreApplication.translate("MainWindow", u"Execus\u00e3o", None))
