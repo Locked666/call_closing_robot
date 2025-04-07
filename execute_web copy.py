@@ -33,9 +33,12 @@ def open_browser():
     # Set the options for the edgedriver
     edge_options = Options()
     edge_options.add_argument("--disable-features=EdgeSignin")
-    # edge_options.add_argument("--headless")
-    # edge_options.add_argument("--no-sandbox")
-    # edge_options.add_argument("--disable-dev-shm-usage")
+    edge_options.add_argument("--disable-logging")
+    edge_options.add_argument("--log-level=3")
+    edge_options.add_argument("--disable-gpu")
+    edge_options.add_argument("--headless")
+    edge_options.add_argument("--no-sandbox")
+    edge_options.add_argument("--disable-dev-shm-usage")
     
     # Start the edgedriver
     driver = webdriver.Edge(service=s, options=edge_options)
@@ -106,36 +109,6 @@ def _group_ticket(driver):
     except Exception as e:
         print(f"Error in _group_ticket: {e}")
 
-# def __alter_ticket(driver):
-#     # Wait until the element is loaded
-#     WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "cSistema")))
-    
-#     # Get the select element
-#     select_element = Select(driver.find_element(By.ID, "cSistema"))
-#     # Wait for the elements to be loaded on the page
-                
-#     try:
-#         WebDriverWait(driver, 95).until(EC.presence_of_element_located((By.ID, "cSistema")))
-#         sistema_select_sistema = Select(driver.find_element(By.ID, "cSistema"))
-#         # Try to select by value
-#         sistema_select_sistema.select_by_value("5")
-#     except:
-#         print("Option with value '5' not found. Trying to select by visible text.")
-#         # If value "5" is not found, try selecting by visible text
-    
-#     # 2. Check if "cResponsavel" is empty; if so, set it to the first option
-#     responsavel_select = Select(driver.find_element(By.ID, "cResponsavel"))
-#     if responsavel_select.first_selected_option.get_attribute("value") == "0":  # If "responsável" is selected
-#         responsavel_select.select_by_index(1)  # Select the first available option
-    
-#     # 3. Set "sPrevisao" to the current date in "dd/mm/yyyy" format
-#     previsao_input = driver.find_element(By.ID, "sPrevisao")
-#     current_date = datetime.now().strftime("%d/%m/%Y")
-#     previsao_input.clear()  # Clear any existing value
-#     previsao_input.send_keys(current_date)  # Set the current date
-
-#     # After setting the values, we can either continue with the next row or do further processing
-
 def __handle_alert(driver):
     try:
         # Espera até o alerta ser presente
@@ -155,11 +128,17 @@ def __handle_alert(driver):
 def check_table_has_rows(driver):
     try:
         # Wait until the table is loaded
+        sleep(TIME_SLEEP)
         WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "tListaSac")))
 
         # Get all rows in the tbody
-        rows = driver.find_elements(By.XPATH, "//table[@id='tListaSac']/tbody/tr")
-        
+        try: 
+            rows = driver.find_elements(By.XPATH, "//table[@id='tListaSac']/tbody/tr")
+        except StaleElementReferenceException:
+            # Re-fetch the rows if the reference is stale
+            rows = driver.find_elements(By.XPATH, "/html/body/div[2]/div[3]/div/div/div[8]/table") 
+             
+
         # print(f"Found {len(rows)} rows.")
         
         if len(rows) > 1:
@@ -205,6 +184,36 @@ def __randon_system_closed(n_system:list = []):
             return system
     except Exception as e:
         print(f"An error occurred: {e}")
+
+def __execute_preencimento(driver):
+    try: 
+        sistema_select_sistema = Select(driver.find_element(By.ID, "cSistema"))
+        # Try to select by value
+        sistema_select_sistema.select_by_value(__randon_system_closed())
+        
+        # 2. Check if "cResponsavel" is empty; if so, set it to the first option
+        responsavel_select = Select(driver.find_element(By.ID, "cResponsavel"))
+        if responsavel_select.first_selected_option.get_attribute("value") == "0":  # If "responsável" is selected
+            responsavel_select.select_by_index(1)  # Select the first available option
+        
+        # 3. Set "sPrevisao" to the current date in "dd/mm/yyyy" format
+        previsao_input = driver.find_element(By.ID, "sPrevisao")
+        current_date = datetime.now().strftime("%d/%m/%Y")
+        previsao_input.clear()  # Clear any existing value
+        previsao_input.send_keys(current_date)  # Set the current date
+        
+        # 4. Click the "Salvar" button
+        
+        update_ticket_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.ID, "btAtualizar"))
+        )
+        update_ticket_button.click()  
+        
+        __handle_alert(driver)
+    except Exception as e:
+        print(f"Ocorreu um erro na função(__execute_preencimento) first tray : {e} \n {e.__traceback__} \n {e.__cause__} \n {e.__context__} ")
+    
+    
     
 ## Method to alter ticket after close
 def __alter_ticket(driver):
@@ -214,7 +223,9 @@ def __alter_ticket(driver):
     try:
         # 1. Set "cSistema" to the value "5"
         
+        # Wait until the element is loaded
         if check_div_exists(driver, "boxAbasChamados"):
+            # Click on the "chamados vinculados" tab
             access_linked_tickets_tab(driver)
             if check_table_has_rows(driver):
                 # Check if the title attribute of the specified element is "encerrado"
@@ -222,45 +233,25 @@ def __alter_ticket(driver):
                     element = driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div/div/div[8]/table/tbody/tr[2]/td[9]")
                     if element.get_attribute("title").lower() == "encerrado":
                         print("O chamado já está encerrado.")
+                        __execute_preencimento(driver)
                     else : 
                         print("Existe chamados vinculados, mas não estão encerrados.")
                         return    
                 except Exception as e:
                     print(f"Erro ao verificar o título do elemento: {e}")
-        
-        else :             
-            try: 
-                sistema_select_sistema = Select(driver.find_element(By.ID, "cSistema"))
-                # Try to select by value
-                sistema_select_sistema.select_by_value(__randon_system_closed())
+                    return
+            else:
+                print("Não existe linhas na tabela.")
+                __execute_preencimento(driver) 
                 
-                # 2. Check if "cResponsavel" is empty; if so, set it to the first option
-                responsavel_select = Select(driver.find_element(By.ID, "cResponsavel"))
-                if responsavel_select.first_selected_option.get_attribute("value") == "0":  # If "responsável" is selected
-                    responsavel_select.select_by_index(1)  # Select the first available option
-                
-                # 3. Set "sPrevisao" to the current date in "dd/mm/yyyy" format
-                previsao_input = driver.find_element(By.ID, "sPrevisao")
-                current_date = datetime.now().strftime("%d/%m/%Y")
-                previsao_input.clear()  # Clear any existing value
-                previsao_input.send_keys(current_date)  # Set the current date
-                
-                # 4. Click the "Salvar" button
-                
-                update_ticket_button = WebDriverWait(driver, 10).until(
-                    EC.element_to_be_clickable((By.ID, "btAtualizar"))
-                )
-                update_ticket_button.click()  
-                
-                __handle_alert(driver)
-            except Exception as e:
-                print(f"Ocorreu um erro na função(__alter_ticket) : {e} \n {e.__traceback__} \n {e.__cause__} \n {e.__context__} ")
+        else : 
+            __execute_preencimento(driver)            
             
             
         __close_ticket(driver)
     
     except Exception as e:
-        print(f"Ocorreu um erro na função(__alter_ticket) : {e} \n {e.__traceback__} \n {e.__cause__} \n {e.__context__} ")
+        print(f"Ocorreu um erro na função(__alter_ticket) principal : {e} \n {e.__traceback__} \n {e.__cause__} \n {e.__context__} ")
          
     
     # driver.quit()
@@ -268,12 +259,14 @@ def __alter_ticket(driver):
 #   method to close ticket
 def __close_ticket(driver):
     sleep(TIME_SLEEP)
-    
-    # clicked bnt close ticket
-    close_ticket_button = WebDriverWait(driver, TIME_SLEEP).until(
-        EC.element_to_be_clickable((By.ID, "btAtribuir"))
-    )
-    close_ticket_button.click()  
+    try:
+        # clicked bnt close ticket
+        close_ticket_button = WebDriverWait(driver, TIME_SLEEP).until(
+            EC.element_to_be_clickable((By.ID, "btAtribuir"))
+        )
+        close_ticket_button.click()
+    except Exception as e:
+        print(f"Ocorreu um erro ao clicar no botão de encerrar: {e}")      
 
     try:
         # Espera até que o estilo de display da div não seja 'none'
@@ -341,7 +334,7 @@ def get_data(driver):
             
             for row in rows:
                 # Get the link (first <a> element) in the row
-                print(f"{len(n_tickets)} - {len(rows)}")  
+                 
                 try: 
                     # print(f'Entrou no for' )
                     # print(f"n_tickets  = {n_tickets}")
@@ -349,16 +342,8 @@ def get_data(driver):
                     link_element = row.find_element(By.XPATH, ".//a[contains(@href, 'conteudo=sac_ticketaberto')]")
                     href = link_element.get_attribute("href")
                     
-                    if href in n_tickets:
-                        if len(rows) == len(n_tickets):
-                            print("Todos os Tickets Foram Processados")
-                            _close_system_ticket()
-                            break
-                        else:
-                            continue
-                        
-                        
-                    else: 
+                    if href not in n_tickets:
+                        print(f"{len(n_tickets)} - {len(rows)}")  
                         # Execute your function (e.g., open the link)
                         print(f"Processing: {href}")
                         
@@ -371,7 +356,15 @@ def get_data(driver):
                         _set_hundred_page(driver)
                         
                         break  # Proceed to the next row
-                      
+
+                    else:
+                        if len(rows) <= len(n_tickets):
+                            print("Todos os Tickets Foram Processados")
+                            _close_system_ticket()
+                            break
+                        else:
+                            continue
+                        
                 except Exception as e:
                     print(f"Ocorreu um erro no processo for row in rows: {e}")
                     if 'no such element'.lower() in str(e):
