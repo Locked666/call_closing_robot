@@ -15,9 +15,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QDateEdit, QFrame, QGroupBox,
-    QHeaderView, QLabel, QPushButton, QSizePolicy,
-    QTableView, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QPlainTextEdit,
+    QPushButton, QSizePolicy, QVBoxLayout, QWidget)
 
 class Ui_frm_log_execusao(object):
     def setupUi(self, frm_log_execusao):
@@ -33,58 +32,40 @@ class Ui_frm_log_execusao(object):
         self.frame.setFrameShape(QFrame.StyledPanel)
         self.frame.setFrameShadow(QFrame.Raised)
         self.verticalLayout_2 = QVBoxLayout(self.frame)
-        self.verticalLayout_2.setSpacing(0)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.frame_2 = QFrame(self.frame)
-        self.frame_2.setObjectName(u"frame_2")
-        self.frame_2.setMinimumSize(QSize(0, 121))
-        self.frame_2.setMaximumSize(QSize(16777215, 121))
-        self.frame_2.setFrameShape(QFrame.StyledPanel)
-        self.frame_2.setFrameShadow(QFrame.Raised)
-        self.verticalLayout_4 = QVBoxLayout(self.frame_2)
-        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
-        self.groupBox = QGroupBox(self.frame_2)
-        self.groupBox.setObjectName(u"groupBox")
-        self.pushButton = QPushButton(self.groupBox)
-        self.pushButton.setObjectName(u"pushButton")
-        self.pushButton.setGeometry(QRect(10, 70, 75, 23))
-        self.widget = QWidget(self.groupBox)
-        self.widget.setObjectName(u"widget")
-        self.widget.setGeometry(QRect(10, 20, 83, 41))
-        self.verticalLayout_5 = QVBoxLayout(self.widget)
-        self.verticalLayout_5.setObjectName(u"verticalLayout_5")
-        self.verticalLayout_5.setContentsMargins(0, 0, 0, 0)
-        self.label = QLabel(self.widget)
-        self.label.setObjectName(u"label")
-
-        self.verticalLayout_5.addWidget(self.label)
-
-        self.dateEdit = QDateEdit(self.widget)
-        self.dateEdit.setObjectName(u"dateEdit")
-        self.dateEdit.setCalendarPopup(True)
-        self.dateEdit.setDate(QDate(2025, 1, 10))
-
-        self.verticalLayout_5.addWidget(self.dateEdit)
-
-
-        self.verticalLayout_4.addWidget(self.groupBox)
-
-
-        self.verticalLayout_2.addWidget(self.frame_2)
-
         self.frame_3 = QFrame(self.frame)
         self.frame_3.setObjectName(u"frame_3")
         self.frame_3.setFrameShape(QFrame.StyledPanel)
         self.frame_3.setFrameShadow(QFrame.Raised)
         self.verticalLayout_3 = QVBoxLayout(self.frame_3)
-        self.verticalLayout_3.setSpacing(0)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.verticalLayout_3.setContentsMargins(0, 7, 0, 0)
-        self.tableView = QTableView(self.frame_3)
-        self.tableView.setObjectName(u"tableView")
+        self.plainTextEdit = QPlainTextEdit(self.frame_3)
+        self.plainTextEdit.setObjectName(u"plainTextEdit")
+        self.plainTextEdit.setReadOnly(True)
+        self.plainTextEdit.setBackgroundVisible(True)
+        self.plainTextEdit.setCenterOnScroll(True)
 
-        self.verticalLayout_3.addWidget(self.tableView)
+        self.verticalLayout_3.addWidget(self.plainTextEdit)
+
+        self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.bnt_clear_file = QPushButton(self.frame_3)
+        self.bnt_clear_file.setObjectName(u"bnt_clear_file")
+
+        self.horizontalLayout.addWidget(self.bnt_clear_file)
+
+        self.bnt_copy_file = QPushButton(self.frame_3)
+        self.bnt_copy_file.setObjectName(u"bnt_copy_file")
+
+        self.horizontalLayout.addWidget(self.bnt_copy_file)
+
+        self.bnt_quit = QPushButton(self.frame_3)
+        self.bnt_quit.setObjectName(u"bnt_quit")
+
+        self.horizontalLayout.addWidget(self.bnt_quit)
+
+
+        self.verticalLayout_3.addLayout(self.horizontalLayout)
 
 
         self.verticalLayout_2.addWidget(self.frame_3)
@@ -100,8 +81,8 @@ class Ui_frm_log_execusao(object):
 
     def retranslateUi(self, frm_log_execusao):
         frm_log_execusao.setWindowTitle(QCoreApplication.translate("frm_log_execusao", u"Form", None))
-        self.groupBox.setTitle(QCoreApplication.translate("frm_log_execusao", u"Filtro", None))
-        self.pushButton.setText(QCoreApplication.translate("frm_log_execusao", u"Pesquisar", None))
-        self.label.setText(QCoreApplication.translate("frm_log_execusao", u"Data", None))
+        self.bnt_clear_file.setText(QCoreApplication.translate("frm_log_execusao", u"Apagar Arquivo de Log.", None))
+        self.bnt_copy_file.setText(QCoreApplication.translate("frm_log_execusao", u"Fazer uma Copia", None))
+        self.bnt_quit.setText(QCoreApplication.translate("frm_log_execusao", u"Sair", None))
     # retranslateUi
 

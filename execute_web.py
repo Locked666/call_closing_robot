@@ -10,7 +10,10 @@ from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.microsoft import EdgeChromiumDriverManager # Import the Edge driver manager
 from PySide6.QtCore import QObject, Signal
 from datetime import datetime
-from time import sleep
+from time import sleep, time
+import uuid
+import tempfile
+import os 
 from text_for_close import text
 from random import choice, randint
 from dotenv import dotenv_values
@@ -21,23 +24,23 @@ config = dotenv_values(".env")
 URL = config['URL_INIT']
 USERNAME = config['MY_SECRET_USERNAME']
 PASSWORD = config['MY_SECRET_PASSWORD']
-TIME_SLEEP = 5
+TIME_SLEEP = 9
 
 class WorkerLogger(QObject):
     """
-    Classe simples para substituir os prints e enviar mensagens para a UI
+    Classe simples para substituir os work.logs e enviar mensagens para a UI
     """
     log_signal = Signal(str)  # Sinal que será conectado à UI
     
     def log(self, message):
-        """Método para log que substitui o print"""
+        """Método para log que substitui o work.log"""
         self.log_signal.emit(str(message))
         
     def __call__(self, message):
         """Permite usar a instância como função"""
         self.log(message)
 
-# Cria uma instância global que será usada no lugar dos prints
+# Cria uma instância global que será usada no lugar dos work.logs
 work = WorkerLogger()
 
 
@@ -51,14 +54,79 @@ def open_browser():
     
     # Set the options for the edgedriver
     edge_options = Options()
+    
+    # 1. Cria um diretório temporário único
+    
     edge_options.add_argument("--disable-features=EdgeSignin")
-    # edge_options.add_argument("--headless")
-    # edge_options.add_argument("--no-sandbox")
-    # edge_options.add_argument("--disable-dev-shm-usage")
+    edge_options.add_argument("--disable-logging")
+    edge_options.add_argument("--log-level=3")
+    edge_options.add_argument("--disable-gpu")
+    edge_options.add_argument("--headless")
+    edge_options.add_argument("--no-sandbox")
+    edge_options.add_argument("--disable-dev-shm-usage")
+    
+
     
     # Start the edgedriver
     driver = webdriver.Edge(service=s, options=edge_options)
     return driver
+
+# def open_browser():
+#     """Inicia o navegador Edge com configurações otimizadas e tratamento robusto de erros"""
+#     try:
+#         # Configuração do serviço com gerenciamento automático de driver
+#         service = Service(EdgeChromiumDriverManager().install())
+        
+#         # Configurações avançadas do Edge
+#         edge_options = Options()
+        
+#         # 1. Cria um diretório de perfil único e seguro
+#         temp_dir = os.path.join(tempfile.gettempdir(), f"edge_profile_{uuid.uuid4().hex}")
+#         os.makedirs(temp_dir, exist_ok=True)
+        
+#         # 2. Configurações essenciais para evitar conflitos
+#         # edge_options.add_argument(f"--user-data-dir={temp_dir}")
+#         edge_options.add_argument("--incognito")
+#         edge_options.add_argument("--disable-features=EdgeSignin,RendererCodeIntegrity")
+#         edge_options.add_argument("--no-first-run")
+#         edge_options.add_argument("--no-default-browser-check")
+        
+#         # 3. Otimizações de performance e logs
+#         edge_options.add_argument("--disable-gpu")
+#         edge_options.add_argument("--disable-logging")
+#         edge_options.add_argument("--log-level=3")
+#         edge_options.add_argument("--disable-dev-shm-usage")
+        
+#         # 4. Configurações para ambiente headless (se necessário)
+#         edge_options.add_argument("--headless")
+#         edge_options.add_argument("--window-size=1920,1080")
+        
+#         # 5. Configurações de segurança
+#         edge_options.add_argument("--no-sandbox")
+#         edge_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+#         edge_options.add_experimental_option('useAutomationExtension', False)
+        
+#         # 6. Inicialização do driver com tratamento de erros
+#         driver = webdriver.Edge(service=service, options=edge_options)
+        
+#         # Configurações adicionais pós-inicialização
+#         driver.execute_cdp_cmd("Network.setCacheDisabled", {"cacheDisabled": True})
+        
+#         work.log("Navegador iniciado com sucesso")
+#         return driver
+        
+#     except Exception as e:
+#         work.log(f"Falha crítica ao iniciar navegador: {str(e)}")
+        
+#         # Limpeza de recursos em caso de falha
+#         try:
+#             if 'temp_dir' in locals() and os.path.exists(temp_dir):
+#                 os.rmdir(temp_dir)
+#         except Exception as cleanup_error:
+#             work.log(f"Erro na limpeza: {cleanup_error}")
+        
+#         # Propagação do erro para tratamento externo
+#         raise RuntimeError(f"Falha ao inicializar navegador: {e}") from e
 
 
 def generate_text_close_ticket():
@@ -79,7 +147,7 @@ def login(driver):
         password.send_keys(Keys.RETURN)
         return True
     except Exception as e:
-        work.log(e)
+        work.log(f"Ocorrou um erro ao fazer login: {e}")
         driver.quit()
             
 def _set_filter_ticket(driver):
@@ -110,7 +178,7 @@ def _group_ticket(driver):
             try:
                 # Click the button
                 button.click()
-                work.log(f"Clicked button with ID: {button.get_attribute('id')}")
+                # work.log(f"Clicked button with ID: {button.get_attribute('id')}")
                 
                 # Handle any alerts that may appear
                 __handle_alert(driver)
@@ -118,42 +186,12 @@ def _group_ticket(driver):
                 # Wait for a short period to ensure the action is completed
                 sleep(1)
             except Exception as e:
-                work.log(f"Error clicking button with ID {button.get_attribute('id')}: {e}")
+                work.log(f"Ocorreu um erro ao agupar tickets {button.get_attribute('id')}: {e}")
                 continue
         click_close_alert_button(driver)
         return True    
     except Exception as e:
         work.log(f"Error in _group_ticket: {e}")
-
-# def __alter_ticket(driver):
-#     # Wait until the element is loaded
-#     WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "cSistema")))
-    
-#     # Get the select element
-#     select_element = Select(driver.find_element(By.ID, "cSistema"))
-#     # Wait for the elements to be loaded on the page
-                
-#     try:
-#         WebDriverWait(driver, 95).until(EC.presence_of_element_located((By.ID, "cSistema")))
-#         sistema_select_sistema = Select(driver.find_element(By.ID, "cSistema"))
-#         # Try to select by value
-#         sistema_select_sistema.select_by_value("5")
-#     except:
-#         work.log("Option with value '5' not found. Trying to select by visible text.")
-#         # If value "5" is not found, try selecting by visible text
-    
-#     # 2. Check if "cResponsavel" is empty; if so, set it to the first option
-#     responsavel_select = Select(driver.find_element(By.ID, "cResponsavel"))
-#     if responsavel_select.first_selected_option.get_attribute("value") == "0":  # If "responsável" is selected
-#         responsavel_select.select_by_index(1)  # Select the first available option
-    
-#     # 3. Set "sPrevisao" to the current date in "dd/mm/yyyy" format
-#     previsao_input = driver.find_element(By.ID, "sPrevisao")
-#     current_date = datetime.now().strftime("%d/%m/%Y")
-#     previsao_input.clear()  # Clear any existing value
-#     previsao_input.send_keys(current_date)  # Set the current date
-
-#     # After setting the values, we can either continue with the next row or do further processing
 
 def __handle_alert(driver):
     try:
@@ -165,32 +203,39 @@ def __handle_alert(driver):
         
         # Clica no botão "OK" (ou similar) no alerta
         alert.accept()
-        work.log("Alerta tratado com sucesso.")
+        # work.log("Alerta tratado com sucesso.")
         
     except Exception as e:
-        work.log(f"An error occurred: {e}")
+        work.log(f"Ocorreu um erro ao tratar alerta: {e}")
 
-
+# Verificar a quantidade de linhas na tabela 
 def check_table_has_rows(driver):
     try:
         # Wait until the table is loaded
+        sleep(TIME_SLEEP)
         WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "tListaSac")))
 
         # Get all rows in the tbody
-        rows = driver.find_elements(By.XPATH, "//table[@id='tListaSac']/tbody/tr")
-        
-        work.log(f"Found {len(rows)} rows.")
+        try: 
+            rows = driver.find_elements(By.XPATH, "//table[@id='tListaSac']/tbody/tr")
+        except StaleElementReferenceException:
+            # Re-fetch the rows if the reference is stale
+            rows = driver.find_elements(By.XPATH, "/html/body/div[2]/div[3]/div/div/div[8]/table") 
+             
+
+        # work.log(f"Found {len(rows)} rows.")
         
         if len(rows) > 1:
-            work.log("Existe Linhas na tabela.")
+            # work.log("Existe Linhas na tabela.")
             return True
         else:
-            work.log("Não existe linhas na tabela.")
+            # work.log("Não existe linhas na tabela.")
             return False
     except Exception as e:
-        work.log(f"An error occurred while checking the table: {e}")
+        work.log(f"Ocorreu um erro ao verificar linhas da tabela:\n Funcão (check_table_has_rows)\n {e}")
         return False
 
+# Acessar a aba de chamados vinculados
 def access_linked_tickets_tab(driver):
     try:
         # Check if the div exists
@@ -198,7 +243,7 @@ def access_linked_tickets_tab(driver):
             # Click on the "chamados vinculados" tab
             linked_tickets_tab = driver.find_element(By.XPATH, "//a[@href=\"javascript:trocaAbaChamados('chamado');\" and @id='btAbaChamTic']")
             linked_tickets_tab.click()
-            work.log("Clicado na aba chamados vinculados")
+            work.log("Verificando na aba Chamados Vinculados.")
             
             # Check if the table has rows
             return check_table_has_rows(driver)
@@ -206,7 +251,7 @@ def access_linked_tickets_tab(driver):
             work.log("Não existe chamados vinculados")
             return False
     except Exception as e:
-        work.log(f"An error occurred while accessing the linked tickets tab: {e}")
+        work.log(f"Ocorreu um erro ao verificar a aba chamados vincualados:\n {e}")
         return False
 
 def __randon_system_closed(n_system:list = []):
@@ -223,6 +268,36 @@ def __randon_system_closed(n_system:list = []):
             return system
     except Exception as e:
         work.log(f"An error occurred: {e}")
+
+def __execute_preencimento(driver):
+    try: 
+        sistema_select_sistema = Select(driver.find_element(By.ID, "cSistema"))
+        # Try to select by value
+        sistema_select_sistema.select_by_value(__randon_system_closed())
+        
+        # 2. Check if "cResponsavel" is empty; if so, set it to the first option
+        responsavel_select = Select(driver.find_element(By.ID, "cResponsavel"))
+        if responsavel_select.first_selected_option.get_attribute("value") == "0":  # If "responsável" is selected
+            responsavel_select.select_by_index(1)  # Select the first available option
+        
+        # 3. Set "sPrevisao" to the current date in "dd/mm/yyyy" format
+        previsao_input = driver.find_element(By.ID, "sPrevisao")
+        current_date = datetime.now().strftime("%d/%m/%Y")
+        previsao_input.clear()  # Clear any existing value
+        previsao_input.send_keys(current_date)  # Set the current date
+        
+        # 4. Click the "Salvar" button
+        
+        update_ticket_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.ID, "btAtualizar"))
+        )
+        update_ticket_button.click()  
+        
+        __handle_alert(driver)
+    except Exception as e:
+        work.log(f"Ocorreu um erro na função(__execute_preencimento) first tray : {e} \n {e.__traceback__} \n {e.__cause__} \n {e.__context__} ")
+    
+    
     
 ## Method to alter ticket after close
 def __alter_ticket(driver):
@@ -232,43 +307,35 @@ def __alter_ticket(driver):
     try:
         # 1. Set "cSistema" to the value "5"
         
+        # Wait until the element is loaded
         if check_div_exists(driver, "boxAbasChamados"):
+            # Click on the "chamados vinculados" tab
             access_linked_tickets_tab(driver)
             if check_table_has_rows(driver):
-                return            
-            
-        try: 
-            sistema_select_sistema = Select(driver.find_element(By.ID, "cSistema"))
-            # Try to select by value
-            sistema_select_sistema.select_by_value(__randon_system_closed())
-            
-            # 2. Check if "cResponsavel" is empty; if so, set it to the first option
-            responsavel_select = Select(driver.find_element(By.ID, "cResponsavel"))
-            if responsavel_select.first_selected_option.get_attribute("value") == "0":  # If "responsável" is selected
-                responsavel_select.select_by_index(1)  # Select the first available option
-            
-            # 3. Set "sPrevisao" to the current date in "dd/mm/yyyy" format
-            previsao_input = driver.find_element(By.ID, "sPrevisao")
-            current_date = datetime.now().strftime("%d/%m/%Y")
-            previsao_input.clear()  # Clear any existing value
-            previsao_input.send_keys(current_date)  # Set the current date
-            
-            # 4. Click the "Salvar" button
-            
-            update_ticket_button = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.ID, "btAtualizar"))
-            )
-            update_ticket_button.click()  
-            
-            __handle_alert(driver)
-        except Exception as e:
-            work.log(f"Ocorreu um erro na função(__alter_ticket) : {e} \n {e.__traceback__} \n {e.__cause__} \n {e.__context__} ")
+                # Check if the title attribute of the specified element is "encerrado"
+                try:
+                    element = driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div/div/div[8]/table/tbody/tr[2]/td[9]")
+                    if element.get_attribute("title").lower() == "encerrado":
+                        work.log("O chamado já está encerrado.")
+                        __execute_preencimento(driver)
+                    else : 
+                        work.log("Existe chamados vinculados, mas não estão encerrados.")
+                        return    
+                except Exception as e:
+                    work.log(f"Erro ao verificar o título do elemento: {e}")
+                    return
+            else:
+                work.log("Não existe linhas na tabela.")
+                __execute_preencimento(driver) 
+                
+        else : 
+            __execute_preencimento(driver)            
             
             
         __close_ticket(driver)
     
     except Exception as e:
-        work.log(f"Ocorreu um erro na função(__alter_ticket) : {e} \n {e.__traceback__} \n {e.__cause__} \n {e.__context__} ")
+        work.log(f"Ocorreu um erro na função(__alter_ticket) principal : {e} \n {e.__traceback__} \n {e.__cause__} \n {e.__context__} ")
          
     
     # driver.quit()
@@ -276,12 +343,14 @@ def __alter_ticket(driver):
 #   method to close ticket
 def __close_ticket(driver):
     sleep(TIME_SLEEP)
-    
-    # clicked bnt close ticket
-    close_ticket_button = WebDriverWait(driver, TIME_SLEEP).until(
-        EC.element_to_be_clickable((By.ID, "btAtribuir"))
-    )
-    close_ticket_button.click()  
+    try:
+        # clicked bnt close ticket
+        close_ticket_button = WebDriverWait(driver, TIME_SLEEP).until(
+            EC.element_to_be_clickable((By.ID, "btAtribuir"))
+        )
+        close_ticket_button.click()
+    except Exception as e:
+        work.log(f"Ocorreu um erro ao clicar no botão de encerrar: {e}")      
 
     try:
         # Espera até que o estilo de display da div não seja 'none'
@@ -326,12 +395,13 @@ def click_close_alert_button(driver):
         )
         # Click the button
         close_alert_button.click()
-        work.log("Clicked the close alert button.")
+        # work.log("Clicked the close alert button.")
     except Exception as e:
         work.log(f"Error clicking the close alert button: {e}")
 
 def get_data(driver):
     n_tickets = []
+    first_ex = 0
     while True:
         try:
             
@@ -340,6 +410,8 @@ def get_data(driver):
 
             # Get all rows in the tbody
             rows = driver.find_elements(By.XPATH, "//table[@id='tListaSac']/tbody/tr")
+            if first_ex == 0:
+                first_ex = int(len(rows))
             
             # work.log(f"Found {len(rows)} rows.")
             if len(rows) <= 1:
@@ -349,26 +421,19 @@ def get_data(driver):
             
             for row in rows:
                 # Get the link (first <a> element) in the row
-                work.log(f"{len(n_tickets)} - {len(rows)}")  
+                 
                 try: 
-                    work.log(f'Entrou no for' )
+                    # work.log(f'Entrou no for' )
                     # work.log(f"n_tickets  = {n_tickets}")
                     
                     link_element = row.find_element(By.XPATH, ".//a[contains(@href, 'conteudo=sac_ticketaberto')]")
                     href = link_element.get_attribute("href")
                     
-                    if href in n_tickets:
-                        if len(rows) == len(n_tickets):
-                            work.log("Todos os Tickets Foram Processados")
-                            _close_system_ticket()
-                            break
-                        else:
-                            continue
-                        
-                        
-                    else: 
+                    if href not in n_tickets:
+                        work.log("-------------------------------------------------------------------")
+                        work.log(f"Total: {first_ex} - Executado: {len(n_tickets)} - Restante: {first_ex - len(n_tickets)}\n")  
                         # Execute your function (e.g., open the link)
-                        work.log(f"Processing: {href}")
+                        work.log(f"Processando: {href}")
                         
                         
                         driver.get(href)  # Navigate to the link
@@ -376,9 +441,18 @@ def get_data(driver):
                         n_tickets.append(href)
                         # Return to the main page or perform other necessary actions before the next iteration
                         driver.back()  # Go back to the previous page
+                        _set_hundred_page(driver)
                         
                         break  # Proceed to the next row
-                      
+
+                    else:
+                        if first_ex <= len(n_tickets):
+                            work.log("Todos os Tickets Foram Processados")
+                            _close_system_ticket()
+                            break
+                        else:
+                            continue
+                        
                 except Exception as e:
                     work.log(f"Ocorreu um erro no processo for row in rows: {e}")
                     if 'no such element'.lower() in str(e):
@@ -388,24 +462,49 @@ def get_data(driver):
             work.log(f"Ocorreu um erro no laço de repetição while: {e} \n {e.__traceback__} \n {e.__cause__} \n {e.__context__} ")
             continue
 
+def _set_hundred_page(driver):
+    try: 
+        
+        value_page_exist = Select(driver.find_element(By.NAME, 'tListaSac_length'))
+        value_page_exist.select_by_index(3)
+        sleep(TIME_SLEEP)
+    except  Exception as e: 
+        work.log(f" Ocorreu um erro ao realizar  a função de mudar a quantidade de paginas: {e} \n {e.__cause__}")
+
 
 def main():
-    driver = open_browser()
-    driver.get(URL)
-    if login(driver):
-        work.log("Login success")
-        sleep(TIME_SLEEP)
-        if not check_div_exists(driver, "modal-chamados-vinculados-id"):
-            # _set_filter_ticket(driver)
-            get_data(driver)
-        else:
-            group = _group_ticket(driver)
-            if group:
+    try:
+        driver = open_browser()
+        driver.get(URL)
+        if login(driver):
+            work.log("Sucesso ao realizar Login")
+            sleep(TIME_SLEEP)
+            if not check_div_exists(driver, "modal-chamados-vinculados-id"):
                 # _set_filter_ticket(driver)
-                get_data(driver)    
-    else:
-        work.log("Login failed")
-    driver.quit()
+                _set_hundred_page(driver)
+                get_data(driver)
+            else:
+                group = _group_ticket(driver)
+                if group:
+                    # _set_filter_ticket(driver)
+                    _set_hundred_page(driver)
+                    get_data(driver)    
+        else:
+            work.log("Login failed")
+        driver.quit()
+    except Exception as e:
+        work.log(f"Ocorreu um erro na função main: {e} \n {e.__traceback__} \n {e.__cause__} \n {e.__context__} ")
+        driver.quit() 
+    
+    finally:
+        if 'driver' in locals():
+            driver.quit()
+            work.log("Navegador encerrado corretamente")       
+
+
+    
+# Example of how to use the main function:
+# main()
 
     
 if __name__ == "__main__":
