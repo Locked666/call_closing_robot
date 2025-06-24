@@ -71,64 +71,6 @@ def open_browser():
     driver = webdriver.Edge(service=s, options=edge_options)
     return driver
 
-# def open_browser():
-#     """Inicia o navegador Edge com configurações otimizadas e tratamento robusto de erros"""
-#     try:
-#         # Configuração do serviço com gerenciamento automático de driver
-#         service = Service(EdgeChromiumDriverManager().install())
-        
-#         # Configurações avançadas do Edge
-#         edge_options = Options()
-        
-#         # 1. Cria um diretório de perfil único e seguro
-#         temp_dir = os.path.join(tempfile.gettempdir(), f"edge_profile_{uuid.uuid4().hex}")
-#         os.makedirs(temp_dir, exist_ok=True)
-        
-#         # 2. Configurações essenciais para evitar conflitos
-#         # edge_options.add_argument(f"--user-data-dir={temp_dir}")
-#         edge_options.add_argument("--incognito")
-#         edge_options.add_argument("--disable-features=EdgeSignin,RendererCodeIntegrity")
-#         edge_options.add_argument("--no-first-run")
-#         edge_options.add_argument("--no-default-browser-check")
-        
-#         # 3. Otimizações de performance e logs
-#         edge_options.add_argument("--disable-gpu")
-#         edge_options.add_argument("--disable-logging")
-#         edge_options.add_argument("--log-level=3")
-#         edge_options.add_argument("--disable-dev-shm-usage")
-        
-#         # 4. Configurações para ambiente headless (se necessário)
-#         edge_options.add_argument("--headless")
-#         edge_options.add_argument("--window-size=1920,1080")
-        
-#         # 5. Configurações de segurança
-#         edge_options.add_argument("--no-sandbox")
-#         edge_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-#         edge_options.add_experimental_option('useAutomationExtension', False)
-        
-#         # 6. Inicialização do driver com tratamento de erros
-#         driver = webdriver.Edge(service=service, options=edge_options)
-        
-#         # Configurações adicionais pós-inicialização
-#         driver.execute_cdp_cmd("Network.setCacheDisabled", {"cacheDisabled": True})
-        
-#         work.log("Navegador iniciado com sucesso")
-#         return driver
-        
-#     except Exception as e:
-#         work.log(f"Falha crítica ao iniciar navegador: {str(e)}")
-        
-#         # Limpeza de recursos em caso de falha
-#         try:
-#             if 'temp_dir' in locals() and os.path.exists(temp_dir):
-#                 os.rmdir(temp_dir)
-#         except Exception as cleanup_error:
-#             work.log(f"Erro na limpeza: {cleanup_error}")
-        
-#         # Propagação do erro para tratamento externo
-#         raise RuntimeError(f"Falha ao inicializar navegador: {e}") from e
-
-
 def generate_text_close_ticket():
     return choice(text)
 
@@ -272,8 +214,15 @@ def __randon_system_closed(n_system:list = []):
 def __execute_preencimento(driver):
     try: 
         sistema_select_sistema = Select(driver.find_element(By.ID, "cSistema"))
+        
+        # Pega todos os elementos <option> do <select>
+        options = sistema_select_sistema.options
+
+        # Cria uma lista com os values de cada option
+        values_in_select_cSistema = [option.get_attribute("value") for option in options]
+        
         # Try to select by value
-        sistema_select_sistema.select_by_value(__randon_system_closed())
+        sistema_select_sistema.select_by_value(__randon_system_closed(values_in_select_cSistema))
         
         # 2. Check if "cResponsavel" is empty; if so, set it to the first option
         responsavel_select = Select(driver.find_element(By.ID, "cResponsavel"))
@@ -294,6 +243,7 @@ def __execute_preencimento(driver):
         update_ticket_button.click()  
         
         __handle_alert(driver)
+        
     except Exception as e:
         work.log(f"Ocorreu um erro na função(__execute_preencimento) first tray : {e} \n {e.__traceback__} \n {e.__cause__} \n {e.__context__} ")
     
