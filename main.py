@@ -11,12 +11,14 @@ import os
 import sys
 import qdarktheme
 
-from PySide6.QtCore import Signal,QThread,QCoreApplication,Slot#,SLOT,Qt,QFile,QRect,QObject, QTime,QAbstractTableModel,QDateTime
-from PySide6.QtWidgets import QApplication, QMainWindow, QDialog,QLineEdit, QMessageBox#,QWidget,QVBoxLayout,QWidgetAction,QMdiSubWindow,QCheckBox,QHeaderView,QMenu
+from PySide6.QtCore import Signal,QThread, QSize, QCoreApplication,Slot#, QModelIndex#,SLOT,Qt,QFile,QRect,QObject, QTime,QAbstractTableModel,QDateTime
+from PySide6.QtWidgets import QApplication, QMainWindow, QDialog,QLineEdit, QMessageBox, QTableWidgetItem,QHeaderView#,QWidget,QVBoxLayout,QWidgetAction,QMdiSubWindow,QCheckBox,QHeaderView,QMenu
+from PySide6.QtGui import QIcon #, QKeySequence, QPixmap, QFont, QAction, QCursor#, QStandardItemModel, QStandardItem
 from datetime import datetime
 from pathlib import Path
 from datetime import datetime#,date, time
 
+from text_for_close import get_text_and_row, insert_text_row, edit_text_row, delete_text_row
 
 from ui.mainWindow import Ui_MainWindow
 from ui.FrmConfiguracao import Ui_Form
@@ -50,16 +52,99 @@ class WorkProcessThread(QThread):
 
     
 class CadTexto(QDialog,Ui_CadTexto):
-    def __init__(self) -> None:
+    def __init__(self,icon:QIcon) -> None:
         super().__init__()
         self.setupUi(self)
         self.setWindowTitle(f"Cadastro de Texto")
+        self.load_texts()
+        self.setWindowIcon(icon)
+        self.tableWidget.cellClicked.connect(self.on_row_clicked)
+        self.bnt_inserir.clicked.connect(self.callback_insert)
+        self.bnt_editar.clicked.connect(self.callback_edit_row)
+        self.bnt_excluir.clicked.connect(self.callback_delete_row)
+        self.bnt_clear_display.clicked.connect(lambda: self.plaintext_conteudo.clear())  # Limpa o conteúdo do QPlainTextEdit e reseta o LCD
+        self.bnt_clear_display.clicked.connect(lambda: self.lcd_id.display(0))  # Limpa o conteúdo do QPlainTextEdit e reseta o LCD
+        
+        self.tableWidget.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
+    def load_texts(self):
+        self.tableWidget.setDisabled(False)
+        texts = get_text_and_row()
+
+        self.tableWidget.setRowCount(len(texts))
+        self.tableWidget.setColumnCount(len(texts[0]) if texts else 0)
+
+        for row_index, row_data in enumerate(texts):
+            for col_index, value in enumerate(row_data):
+                item = QTableWidgetItem(str(value))
+                self.tableWidget.setItem(row_index, col_index, item)
+        
+    def on_row_clicked(self, row, column):
+        row_data = {}  # Inicializa o dicionário com valores padrão
+        self.plaintext_conteudo.clear()  # Limpa o conteúdo anterior
+        for col in range(self.tableWidget.columnCount()):            
+            item = self.tableWidget.item(row, col)
+            if item:
+                row_data[self.tableWidget.horizontalHeaderItem(col).text()] = item.text()
+      
+        # Atualiza o conteúdo do QPlainTextEdit
+        self.plaintext_conteudo.setPlainText(row_data.get('Texto', ''))  # Usa o valor do dicionário ou uma string vazia se não existir
+
+        # Atualiza o valor no QLCDNumber
+        self.lcd_id.display(row_data.get('Index', 0))  # Usa o valor do dicionário ou 0 se não existir
+
+    def callback_insert(self):
+        """Callback para inserir um novo texto na tabela."""
+        try:
+            text = self.plaintext_conteudo.toPlainText().strip()
+            if not text:
+                raise ValueError("O texto não pode ser vazio.")
+            insert_text_row(text)
+            self.load_texts()
+            self.plaintext_conteudo.clear()
+            reply =  QMessageBox.information(self, "Sucesso", "Texto inserido com sucesso!", QMessageBox.Ok)
+            if reply == QMessageBox.Ok:
+                self.lcd_id.display(0)  # Reseta o LCD para 0 após a exclusão
+                self.tableWidget.setDisabled(False)
+        except Exception as e:
+            QMessageBox.critical(self, "Erro", f"Erro ao inserir texto: {str(e)}")
+
+    def callback_edit_row(self):
+        """Callback para editar o texto selecionado na tabela."""
+        try:
+            row = self.lcd_id.value()
+            text = self.plaintext_conteudo.toPlainText().strip()
+            if not text:
+                raise ValueError("O texto não pode ser vazio.")
+            edit_text_row(int(row), text)
+            self.load_texts()
+            self.plaintext_conteudo.clear()
+            reply = QMessageBox.information(self, "Sucesso", "Texto editado com sucesso!", QMessageBox.Ok)
+            if reply == QMessageBox.Ok:
+                self.tableWidget.setDisabled(False)
+        except Exception as e:
+            QMessageBox.critical(self, "Erro", f"Erro ao editar texto: {str(e)}")
+
+    def callback_delete_row(self):
+        """Callback para deletar o texto selecionado na tabela."""
+        try:
+            row = self.lcd_id.value()
+            delete_text_row(int(row))
+            self.load_texts()
+            self.plaintext_conteudo.clear()
+            reply = QMessageBox.information(self, "Sucesso", "Texto deletado com sucesso!", QMessageBox.Ok)
+            if reply == QMessageBox.Ok:
+                #self.tableWidget.setDisabled(False)
+                pass
+                self.lcd_id.display(0)  # Reseta o LCD para 0 após a exclusão
+        except Exception as e:
+            QMessageBox.critical(self, "Erro", f"Erro ao deletar texto: {str(e)}")
 
 class Configuracao(QDialog,Ui_Form):
-    def __init__(self) -> None:
+    def __init__(self, icon:QIcon) -> None:
         super().__init__()
         self.setupUi(self)
         self.setWindowTitle(f"Configurações")
+        self.setWindowIcon(icon)
         self.load_config()
         
         self.check_ver_senha.stateChanged.connect(self.ver_senha)
@@ -107,11 +192,12 @@ class Configuracao(QDialog,Ui_Form):
         pass                     
         
 class FrmLogExecusao(QDialog,Ui_frm_log_execusao):
-    def __init__(self) -> None:
+    def __init__(self,icon:QIcon) -> None:
         super().__init__()
         self.setupUi(self)
         self.setWindowTitle(f"Log de Execução")
         self.read_log()
+        self.setWindowIcon(icon)
         self.bnt_quit.clicked.connect(self.close)
         self.bnt_clear_file.clicked.connect(self.clear_log_file)
         self.bnt_copy_file.clicked.connect(self.copy_log_file)
@@ -152,32 +238,31 @@ class MainWindow(QMainWindow,Ui_MainWindow):
         super(MainWindow, self).__init__()
         self.setupUi(self)
         self.setWindowTitle(f"Call Booting")
-        
-        self.actionConfigura_es.triggered.connect(self.open_configuracao)
-        self.actionRespostas.triggered.connect(lambda: CadTexto().exec())
+        icon = QIcon()
+        icon.addFile(u"ico.ico", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.setWindowIcon(icon)
+        self.actionConfigura_es.triggered.connect(lambda: self.open_configuracao(icon=icon))
+        self.actionRespostas.triggered.connect(lambda: CadTexto(icon=icon).exec())
         self.pushButton.clicked.connect(self.start_process)
         self.bnt_log.clicked.connect(self.call_save_log)
         self.bnt_clear_log.clicked.connect(self._clear_display_log)
         
-        self.actionLog_de_Execus_o.triggered.connect(lambda: FrmLogExecusao().exec())
-        # self.bat_thread = None
-        # work.log_signal.connect(self.update_oupdate_logtput)
-        # self.worker = None
-        
-        
-        # self.bat_thread = QThread()  # Renomeado para evitar conflito
-        # self.worker = None
+        self.actionLog_de_Execus_o.triggered.connect(lambda: FrmLogExecusao(icon=icon).exec())
     
+    @Slot() 
     def _clear_display_log(self):
         self.plainTextEdit.clear()
         self.plainTextEdit.setPlainText("Log de Execução")
         
-    def open_configuracao(self):
-        self.config = Configuracao().exec()
-        
+    @Slot()
+    def open_configuracao(self,icon:QIcon):
+        self.config = Configuracao(icon=icon).exec()
+     
+    @Slot()   
     def open_texto(self):
         self.texto = CadTexto().show()
     
+    @Slot()
     def start_process(self):
         """Inicia o processo em uma thread separada"""
         self.pushButton.setDisabled(True)
@@ -218,7 +303,8 @@ class MainWindow(QMainWindow,Ui_MainWindow):
     # def on_process_error(self, error_msg):
     #     self.ui.statusbar.showMessage(f"Erro: {error_msg}")
     #     self.log_message(f"ERRO: {error_msg}")
-        
+    
+    @Slot()    
     def update_oupdate_logtput(self, text):
         """Atualiza o QPlainTextEdit com a saída em tempo real."""
         if text == 'Todos os Tickets Foram Processados':
@@ -226,6 +312,7 @@ class MainWindow(QMainWindow,Ui_MainWindow):
             self.pushButton.setDisabled(False)
             
             self.thread_log.quit()
+            
             self.label.setText(QCoreApplication.translate("MainWindow", u"Execute com consci\u00eancia, lebresse, n\u00e3o existe retorno. ", None))
             self.pushButton.setStyleSheet(u"QPushButton{\n"
 "font: 75 italic 10pt \"Sitka Subheading\";\n"
@@ -243,6 +330,7 @@ class MainWindow(QMainWindow,Ui_MainWindow):
         else :     
             self.plainTextEdit.appendPlainText(text)
 
+    @Slot()
     def call_save_log(self):
         log_file = Path("log.txt")
         if not log_file.exists():
@@ -259,9 +347,13 @@ class MainWindow(QMainWindow,Ui_MainWindow):
         reply = QMessageBox.question(self, 'Confirmação', 'Você realmente deseja sair?',
                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         if reply == QMessageBox.Yes:
+            
             event.accept()
-            self.thread_log.terminate()  # Termina a thread se estiver em execução
-            self.thread_log.quit()
+            try:
+                self.thread_log.terminate()  # Termina a thread se estiver em execução
+                self.thread_log.quit()
+            except Exception as e:
+                pass
         else:
             # Cancel the close event
             event.ignore()

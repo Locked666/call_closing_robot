@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>669</width>
-    <height>450</height>
+    <width>805</width>
+    <height>455</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -69,7 +69,7 @@
          <property name="geometry">
           <rect>
            <x>100</x>
-           <y>10</y>
+           <y>0</y>
            <width>511</width>
            <height>71</height>
           </rect>
@@ -99,13 +99,13 @@
           <string>Insira o texto e clique em inserir para adicionar um novo ou em grava caso esteja editando.</string>
          </property>
         </widget>
-        <widget class="QWidget" name="">
+        <widget class="QWidget" name="layoutWidget">
          <property name="geometry">
           <rect>
-           <x>210</x>
+           <x>100</x>
            <y>80</y>
-           <width>401</width>
-           <height>25</height>
+           <width>511</width>
+           <height>31</height>
           </rect>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout">
@@ -115,7 +115,7 @@
           <item>
            <widget class="QPushButton" name="bnt_inserir">
             <property name="styleSheet">
-             <string notr="true">background-color: rgb(0, 255, 0);</string>
+             <string notr="true"/>
             </property>
             <property name="text">
              <string>Inserir</string>
@@ -123,30 +123,29 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="bnt_gravar">
+           <widget class="QPushButton" name="bnt_editar">
             <property name="styleSheet">
-             <string notr="true">background-color: rgb(255, 255, 0);</string>
+             <string notr="true"/>
             </property>
             <property name="text">
-             <string>Gravar</string>
+             <string>Editar</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="bnt_cancelar">
+           <widget class="QPushButton" name="bnt_excluir">
             <property name="styleSheet">
-             <string notr="true">background-color: rgb(0, 85, 255);
-color: rgb(255, 255, 255);</string>
+             <string notr="true"/>
             </property>
             <property name="text">
-             <string>Cancelar</string>
+             <string>Excluir</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QPushButton" name="bnt_clear_display">
             <property name="styleSheet">
-             <string notr="true">background-color: rgb(0, 255, 255);</string>
+             <string notr="true"/>
             </property>
             <property name="text">
              <string>Limpar Tela</string>
@@ -182,7 +181,39 @@ color: rgb(255, 255, 255);</string>
           <number>0</number>
          </property>
          <item>
-          <widget class="QTableView" name="tableView"/>
+          <widget class="QTableWidget" name="tableWidget">
+           <property name="editTriggers">
+            <set>QAbstractItemView::NoEditTriggers</set>
+           </property>
+           <property name="showDropIndicator" stdset="0">
+            <bool>false</bool>
+           </property>
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
+           </property>
+           <property name="textElideMode">
+            <enum>Qt::ElideNone</enum>
+           </property>
+           <property name="sortingEnabled">
+            <bool>true</bool>
+           </property>
+           <attribute name="verticalHeaderMinimumSectionSize">
+            <number>23</number>
+           </attribute>
+           <column>
+            <property name="text">
+             <string>Index</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Texto</string>
+            </property>
+           </column>
+          </widget>
          </item>
         </layout>
        </widget>

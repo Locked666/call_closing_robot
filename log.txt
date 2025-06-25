@@ -1,0 +1,77 @@
+Log de Execução
+Log de Execução
+Iniciando o processo...
+Sucesso ao realizar Login
+-------------------------------------------------------------------
+Total: 5 - Executado: 0 - Restante: 5
+
+Processando: https://qualitysistemas.com.br/intranet/index.php?conteudo=sac_ticketaberto&id=119396
+Alterando ticket
+-------------------------------------------------------------------
+Total: 5 - Executado: 1 - Restante: 4
+
+Processando: https://qualitysistemas.com.br/intranet/index.php?conteudo=sac_ticketaberto&id=117460
+Alterando ticket
+Verificando na aba Chamados Vinculados.
+Existe chamados vinculados, mas não estão encerrados.
+-------------------------------------------------------------------
+Total: 5 - Executado: 2 - Restante: 3
+
+Processando: https://qualitysistemas.com.br/intranet/index.php?conteudo=sac_ticketaberto&id=100872
+Alterando ticket
+Verificando na aba Chamados Vinculados.
+Existe chamados vinculados, mas não estão encerrados.
+-------------------------------------------------------------------
+Total: 5 - Executado: 3 - Restante: 2
+
+Processando: https://qualitysistemas.com.br/intranet/index.php?conteudo=sac_ticketaberto&id=100870
+Alterando ticket
+Verificando na aba Chamados Vinculados.
+Existe chamados vinculados, mas não estão encerrados.
+-------------------------------------------------------------------
+Total: 5 - Executado: 4 - Restante: 1
+
+Processando: https://qualitysistemas.com.br/intranet/index.php?conteudo=sac_ticketaberto&id=98245
+Alterando ticket
+Verificando na aba Chamados Vinculados.
+Existe chamados vinculados, mas não estão encerrados.
+Todos os Tickets Foram Processados 2025-06-25 15:08:46.459539
+Navegador encerrado corretamente
+Log de Execução
+Iniciando o processo...
+Sucesso ao realizar Login
+-------------------------------------------------------------------
+Total: 5 - Executado: 0 - Restante: 5
+
+Processando: https://qualitysistemas.com.br/intranet/index.php?conteudo=sac_ticketaberto&id=119396
+Alterando ticket
+-------------------------------------------------------------------
+Total: 5 - Executado: 1 - Restante: 4
+
+Processando: https://qualitysistemas.com.br/intranet/index.php?conteudo=sac_ticketaberto&id=117460
+Alterando ticket
+Verificando na aba Chamados Vinculados.
+Existe chamados vinculados, mas não estão encerrados.
+-------------------------------------------------------------------
+Total: 5 - Executado: 2 - Restante: 3
+
+Processando: https://qualitysistemas.com.br/intranet/index.php?conteudo=sac_ticketaberto&id=100872
+Alterando ticket
+Verificando na aba Chamados Vinculados.
+Existe chamados vinculados, mas não estão encerrados.
+-------------------------------------------------------------------
+Total: 5 - Executado: 3 - Restante: 2
+
+Processando: https://qualitysistemas.com.br/intranet/index.php?conteudo=sac_ticketaberto&id=100870
+Alterando ticket
+Verificando na aba Chamados Vinculados.
+Existe chamados vinculados, mas não estão encerrados.
+-------------------------------------------------------------------
+Total: 5 - Executado: 4 - Restante: 1
+
+Processando: https://qualitysistemas.com.br/intranet/index.php?conteudo=sac_ticketaberto&id=98245
+Alterando ticket
+Verificando na aba Chamados Vinculados.
+Existe chamados vinculados, mas não estão encerrados.
+Todos os Tickets Foram Processados 2025-06-25 15:08:46.459539
+Navegador encerrado corretamente

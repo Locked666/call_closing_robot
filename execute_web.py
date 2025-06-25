@@ -14,9 +14,11 @@ from time import sleep, time
 import uuid
 import tempfile
 import os 
-from text_for_close import text
+from text_for_close import get_text
 from random import choice, randint
 from dotenv import dotenv_values
+
+# text = get_text()  # Import the text from the text_for_close module
 
 config = dotenv_values(".env")
 
@@ -72,6 +74,7 @@ def open_browser():
     return driver
 
 def generate_text_close_ticket():
+    text = get_text()  # Import the text from the text_for_close module
     return choice(text)
 
 

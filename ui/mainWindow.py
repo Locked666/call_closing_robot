@@ -16,11 +16,10 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QIcon, QImage, QKeySequence, QLinearGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
-from PySide6.QtWidgets import (QAbstractSpinBox, QApplication, QCheckBox, QDateEdit,
-    QFrame, QGroupBox, QHBoxLayout, QLabel,
-    QMainWindow, QMenu, QMenuBar, QPlainTextEdit,
-    QPushButton, QSizePolicy, QStatusBar, QVBoxLayout,
-    QWidget)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QFrame, QGroupBox,
+    QHBoxLayout, QLabel, QMainWindow, QMenu,
+    QMenuBar, QPlainTextEdit, QPushButton, QSizePolicy,
+    QStatusBar, QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -56,76 +55,14 @@ class Ui_MainWindow(object):
         self.frame_2.setFrameShadow(QFrame.Raised)
         self.groupBox = QGroupBox(self.frame_2)
         self.groupBox.setObjectName(u"groupBox")
-        self.groupBox.setEnabled(False)
+        self.groupBox.setEnabled(True)
         self.groupBox.setGeometry(QRect(10, 0, 461, 161))
-        self.groupBox_2 = QGroupBox(self.groupBox)
-        self.groupBox_2.setObjectName(u"groupBox_2")
-        self.groupBox_2.setEnabled(False)
-        self.groupBox_2.setGeometry(QRect(210, 10, 241, 131))
-        self.check_sys_contabil = QCheckBox(self.groupBox_2)
-        self.check_sys_contabil.setObjectName(u"check_sys_contabil")
-        self.check_sys_contabil.setGeometry(QRect(10, 40, 111, 17))
-        self.check_sys_contabil.setChecked(True)
-        self.check_sys_compras = QCheckBox(self.groupBox_2)
-        self.check_sys_compras.setObjectName(u"check_sys_compras")
-        self.check_sys_compras.setGeometry(QRect(10, 60, 111, 17))
-        self.check_sys_compras.setChecked(True)
-        self.check_sys_licitacao = QCheckBox(self.groupBox_2)
-        self.check_sys_licitacao.setObjectName(u"check_sys_licitacao")
-        self.check_sys_licitacao.setGeometry(QRect(10, 80, 111, 17))
-        self.check_sys_licitacao.setChecked(True)
-        self.check_sys_arh = QCheckBox(self.groupBox_2)
-        self.check_sys_arh.setObjectName(u"check_sys_arh")
-        self.check_sys_arh.setGeometry(QRect(10, 100, 111, 17))
-        self.check_sys_arh.setChecked(True)
-        self.check_sys_solicitaoweb = QCheckBox(self.groupBox_2)
-        self.check_sys_solicitaoweb.setObjectName(u"check_sys_solicitaoweb")
-        self.check_sys_solicitaoweb.setGeometry(QRect(110, 80, 111, 17))
-        self.check_sys_solicitaoweb.setChecked(True)
-        self.check_sys_gecom = QCheckBox(self.groupBox_2)
-        self.check_sys_gecom.setObjectName(u"check_sys_gecom")
-        self.check_sys_gecom.setGeometry(QRect(110, 100, 111, 17))
-        self.check_sys_gecom.setChecked(True)
-        self.check_sys_siart = QCheckBox(self.groupBox_2)
-        self.check_sys_siart.setObjectName(u"check_sys_siart")
-        self.check_sys_siart.setGeometry(QRect(110, 40, 111, 17))
-        self.check_sys_siart.setChecked(True)
-        self.check_sys_docfacil = QCheckBox(self.groupBox_2)
-        self.check_sys_docfacil.setObjectName(u"check_sys_docfacil")
-        self.check_sys_docfacil.setGeometry(QRect(110, 60, 111, 17))
-        self.check_sys_docfacil.setChecked(True)
-        self.check_sys_desmarca_todos = QCheckBox(self.groupBox_2)
-        self.check_sys_desmarca_todos.setObjectName(u"check_sys_desmarca_todos")
-        self.check_sys_desmarca_todos.setGeometry(QRect(10, 20, 111, 17))
-        self.check_sys_desmarca_todos.setChecked(False)
         self.layoutWidget = QWidget(self.groupBox)
         self.layoutWidget.setObjectName(u"layoutWidget")
-        self.layoutWidget.setGeometry(QRect(10, 20, 120, 85))
+        self.layoutWidget.setGeometry(QRect(10, 20, 121, 41))
         self.verticalLayout_5 = QVBoxLayout(self.layoutWidget)
         self.verticalLayout_5.setObjectName(u"verticalLayout_5")
         self.verticalLayout_5.setContentsMargins(0, 0, 0, 0)
-        self.verticalLayout_4 = QVBoxLayout()
-        self.verticalLayout_4.setSpacing(9)
-        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
-        self.verticalLayout_4.setContentsMargins(9, 9, 9, 9)
-        self.label_2 = QLabel(self.layoutWidget)
-        self.label_2.setObjectName(u"label_2")
-
-        self.verticalLayout_4.addWidget(self.label_2)
-
-        self.date_execucao = QDateEdit(self.layoutWidget)
-        self.date_execucao.setObjectName(u"date_execucao")
-        self.date_execucao.setWrapping(False)
-        self.date_execucao.setButtonSymbols(QAbstractSpinBox.UpDownArrows)
-        self.date_execucao.setAccelerated(False)
-        self.date_execucao.setCalendarPopup(True)
-        self.date_execucao.setDate(QDate(2025, 1, 10))
-
-        self.verticalLayout_4.addWidget(self.date_execucao)
-
-
-        self.verticalLayout_5.addLayout(self.verticalLayout_4)
-
         self.check_param_browser = QCheckBox(self.layoutWidget)
         self.check_param_browser.setObjectName(u"check_param_browser")
         self.check_param_browser.setChecked(True)
@@ -215,14 +152,6 @@ class Ui_MainWindow(object):
         self.menuExecus_o.addAction(self.actionLog_de_Execus_o)
 
         self.retranslateUi(MainWindow)
-        self.check_sys_desmarca_todos.toggled.connect(self.check_sys_contabil.toggle)
-        self.check_sys_desmarca_todos.toggled.connect(self.check_sys_compras.toggle)
-        self.check_sys_desmarca_todos.toggled.connect(self.check_sys_licitacao.toggle)
-        self.check_sys_desmarca_todos.toggled.connect(self.check_sys_arh.toggle)
-        self.check_sys_desmarca_todos.toggled.connect(self.check_sys_siart.toggle)
-        self.check_sys_desmarca_todos.toggled.connect(self.check_sys_docfacil.toggle)
-        self.check_sys_desmarca_todos.toggled.connect(self.check_sys_solicitaoweb.toggle)
-        self.check_sys_desmarca_todos.toggled.connect(self.check_sys_gecom.toggle)
 
         QMetaObject.connectSlotsByName(MainWindow)
     # setupUi
@@ -234,17 +163,6 @@ class Ui_MainWindow(object):
         self.actionConfigura_es.setText(QCoreApplication.translate("MainWindow", u"Configura\u00e7\u00f5es", None))
         self.actionLog_de_Execus_o.setText(QCoreApplication.translate("MainWindow", u"Log de Execus\u00e3o", None))
         self.groupBox.setTitle(QCoreApplication.translate("MainWindow", u"Parametros de Execu\u00e7\u00e3o", None))
-        self.groupBox_2.setTitle(QCoreApplication.translate("MainWindow", u"Round com os sistemas. ", None))
-        self.check_sys_contabil.setText(QCoreApplication.translate("MainWindow", u"Contabilidade ", None))
-        self.check_sys_compras.setText(QCoreApplication.translate("MainWindow", u"Compras", None))
-        self.check_sys_licitacao.setText(QCoreApplication.translate("MainWindow", u"Licita\u00e7\u00e3o", None))
-        self.check_sys_arh.setText(QCoreApplication.translate("MainWindow", u"ARH", None))
-        self.check_sys_solicitaoweb.setText(QCoreApplication.translate("MainWindow", u"Solicita\u00e7\u00e3o Web", None))
-        self.check_sys_gecom.setText(QCoreApplication.translate("MainWindow", u"Gecom", None))
-        self.check_sys_siart.setText(QCoreApplication.translate("MainWindow", u"Siart", None))
-        self.check_sys_docfacil.setText(QCoreApplication.translate("MainWindow", u"DocF\u00e1cil", None))
-        self.check_sys_desmarca_todos.setText(QCoreApplication.translate("MainWindow", u"Desmarcar Todos", None))
-        self.label_2.setText(QCoreApplication.translate("MainWindow", u"Data de Fechamento", None))
         self.check_param_browser.setText(QCoreApplication.translate("MainWindow", u"Ocultar Navegador", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"Execute com consci\u00eancia, lebresse, n\u00e3o existe retorno. ", None))
         self.pushButton.setText(QCoreApplication.translate("MainWindow", u"Executar", None))
