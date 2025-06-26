@@ -5,15 +5,16 @@ from selenium.webdriver.common.alert import Alert
 from selenium.webdriver.edge.service import Service
 from selenium.webdriver.edge.options import Options
 from selenium.webdriver.support.ui import WebDriverWait,Select
-from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException
+from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException,WebDriverException
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.microsoft import EdgeChromiumDriverManager # Import the Edge driver manager
 from PySide6.QtCore import QObject, Signal
 from datetime import datetime
 from time import sleep, time
-import uuid
+# import uuid
 import tempfile
-import os 
+# import os 
+import sys
 from text_for_close import get_text
 from random import choice, randint
 from dotenv import dotenv_values
@@ -48,30 +49,62 @@ work = WorkerLogger()
 
 
 def _close_system_ticket():
-    exit(0)
+
+    sys.exit(0)
 
 def open_browser():
-    # Set the path to the edgedriver
-    s = Service(EdgeChromiumDriverManager().install())
+    def build_options(user_data_dir=None):
+        options = Options()
+        if user_data_dir:
+            options.add_argument(f"--user-data-dir={user_data_dir}")
+        options.add_argument("--disable-features=EdgeSignin")
+        options.add_argument("--disable-gpu")
+        options.add_argument("--headless")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        return options
+
+    try:
+        # Tentativa sem perfil customizado
+        work.log("Iniciando Edge sem perfil personalizado...")
+        s = Service(EdgeChromiumDriverManager().install())
+        driver = webdriver.Edge(service=s, options=build_options())
+        return driver
+
+    except WebDriverException as e:
+        if "user data directory is already in use" in str(e):
+            work.log("Perfil padrão está em uso. Tentando com perfil temporário...")
+            temp_profile = tempfile.mkdtemp()
+            driver = webdriver.Edge(service=s, options=build_options(user_data_dir=temp_profile))
+            return driver
+        else:
+            raise e   
+
+# def open_browser():
+#     # Set the path to the edgedriver
+  
     
     # Set the options for the edgedriver
-    edge_options = Options()
+    # edge_options = Options()
+    # temp_profile = tempfile.mkdtemp()
+    # print("\n\n\n\n")
+    # print(temp_profile)
+    # print("\n\n\n\n")
     
-    # 1. Cria um diretório temporário único
-    
-    edge_options.add_argument("--disable-features=EdgeSignin")
-    edge_options.add_argument("--disable-logging")
-    edge_options.add_argument("--log-level=3")
-    edge_options.add_argument("--disable-gpu")
-    edge_options.add_argument("--headless")
-    edge_options.add_argument("--no-sandbox")
-    edge_options.add_argument("--disable-dev-shm-usage")
+    # # 1. Cria um diretório temporário único
+    # edge_options.add_argument(f"--user-data-dir={temp_profile}")
+    # edge_options.add_argument("--disable-features=EdgeSignin")
+    # edge_options.add_argument("--disable-logging")
+    # edge_options.add_argument("--log-level=3")
+    # edge_options.add_argument("--disable-gpu")
+    # edge_options.add_argument("--headless")
+    # edge_options.add_argument("--no-sandbox")
+    # edge_options.add_argument("--disable-dev-shm-usage")
     
 
-    
-    # Start the edgedriver
-    driver = webdriver.Edge(service=s, options=edge_options)
-    return driver
+    # s = Service(EdgeChromiumDriverManager().install())
+    # driver = webdriver.Edge(service=s, options=edge_options)
+    # return driver
 
 def generate_text_close_ticket():
     text = get_text()  # Import the text from the text_for_close module
@@ -80,6 +113,12 @@ def generate_text_close_ticket():
 
 def login(driver):
     try :
+        if not URL:
+            work.log("URL não definida. Verifique na tela de configurações")
+            return False
+        if not USERNAME or not PASSWORD:
+            work.log("Credenciais não definidas. Verifique na tela de configurações")
+            return False
         # Get the username field
         username = driver.find_element(By.ID, "login")
         # Type the username
@@ -307,7 +346,7 @@ def __close_ticket(driver):
 
     try:
         # Espera até que o estilo de display da div não seja 'none'
-        WebDriverWait(driver, 10).until(
+        WebDriverWait(driver, TIME_SLEEP).until(
             lambda driver: driver.find_element(By.ID, "boxFormInteracao").value_of_css_property('display') != 'none'
         )
         
@@ -368,40 +407,39 @@ def get_data(driver):
             
             # work.log(f"Found {len(rows)} rows.")
             if len(rows) <= 1:
-                work.log("Não existe linhas na tabela.")
+                work.log("Não existe tickets a serem executados")
                 _close_system_ticket()
                 break
             
             for row in rows:
-                # Get the link (first <a> element) in the row
                  
-                try: 
-                    # work.log(f'Entrou no for' )
-                    # work.log(f"n_tickets  = {n_tickets}")
-                    
+                try:       
+                                  
                     link_element = row.find_element(By.XPATH, ".//a[contains(@href, 'conteudo=sac_ticketaberto')]")
                     href = link_element.get_attribute("href")
                     
                     if href not in n_tickets:
                         work.log("-------------------------------------------------------------------")
-                        work.log(f"Total: {first_ex} - Executado: {len(n_tickets)} - Restante: {first_ex - len(n_tickets)}\n")  
-                        # Execute your function (e.g., open the link)
+                        work.log(f"Total: {first_ex} - Executado: {len(n_tickets)} - Restante: {first_ex - len(n_tickets)}\n")
+                        work.log("-------------------------------------------------------------------")  
+
                         work.log(f"Processando: {href}")
-                        
-                        
+
                         driver.get(href)  # Navigate to the link
                         __alter_ticket(driver)  # Call the function to alter the ticket
                         n_tickets.append(href)
-                        # Return to the main page or perform other necessary actions before the next iteration
+                        
                         driver.back()  # Go back to the previous page
+                        
                         _set_hundred_page(driver)
                         
                         break  # Proceed to the next row
 
                     else:
+                        
                         if first_ex <= len(n_tickets):
                             work.log("Todos os Tickets Foram Processados")
-                            _close_system_ticket()
+                            _close_system_ticket()  # Close the system if all tickets are processed
                             break
                         else:
                             continue
@@ -429,6 +467,7 @@ def main():
     try:
         driver = open_browser()
         driver.get(URL)
+        
         if login(driver):
             work.log("Sucesso ao realizar Login")
             sleep(TIME_SLEEP)
@@ -446,8 +485,9 @@ def main():
             work.log("Login failed")
         driver.quit()
     except Exception as e:
-        work.log(f"Ocorreu um erro na função main: {e} \n {e.__traceback__} \n {e.__cause__} \n {e.__context__} ")
+        work.log(f"Ocorreu um erro na função main: {e} \n\n {e.__traceback__} \n {e.__cause__} \n {e.__context__} ")
         driver.quit() 
+         # Ensure the driver is terminated in case of an error
     
     finally:
         if 'driver' in locals():
@@ -456,13 +496,8 @@ def main():
 
 
     
-# Example of how to use the main function:
-# main()
-
-    
 if __name__ == "__main__":
-    # get_data()  # Call the function to get the data
+
     main() # Call the main function
-    # a = generate_text_close_ticket()
-    # work.log(a)
+
       
