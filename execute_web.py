@@ -23,11 +23,19 @@ from dotenv import dotenv_values
 
 config = dotenv_values(".env")
 
+
 # Load environment variables
 URL = config['URL_INIT']
 USERNAME = config['MY_SECRET_USERNAME']
 PASSWORD = config['MY_SECRET_PASSWORD']
+try:
+    MODE_DEBUG = config['MODE_DEBUG'] == 'True'  # Convert string to boolean
+except KeyError:
+    MODE_DEBUG = False
+    
 TIME_SLEEP = 9
+
+
 
 class WorkerLogger(QObject):
     """
@@ -48,9 +56,22 @@ work = WorkerLogger()
 
 
 
-def _close_system_ticket():
+def finished_driver():
+    global driver
+    try:
+        if driver is not None:
+            driver.quit()
+            work.log("Navegador encerrado corretamente")
+            driver = None
+    except Exception as e:
+        work.log(f"Ocorreu um erro ao finalizar o driver: {e}")
+    finally:
+        _close_system_ticket()
 
+
+def _close_system_ticket():
     sys.exit(0)
+
 
 def open_browser():
     def build_options(user_data_dir=None):
@@ -287,8 +308,10 @@ def __execute_preencimento(driver):
         __handle_alert(driver)
         
     except Exception as e:
-        work.log(f"Ocorreu um erro na função(__execute_preencimento) first tray : {e} \n {e.__traceback__} \n {e.__cause__} \n {e.__context__} ")
-    
+        if MODE_DEBUG: 
+            work.log(f"Ocorreu um erro na função(__execute_preencimento) first tray : {e} \n  ")
+        else: 
+            work.log(f"Ocorreu um erro na função(__execute_preencimento): {e}\n ")
     
     
 ## Method to alter ticket after close
@@ -327,7 +350,7 @@ def __alter_ticket(driver):
         __close_ticket(driver)
     
     except Exception as e:
-        work.log(f"Ocorreu um erro na função(__alter_ticket) principal : {e} \n {e.__traceback__} \n {e.__cause__} \n {e.__context__} ")
+        work.log(f"Ocorreu um erro na função(__alter_ticket) principal : {e} \n  ")
          
     
     # driver.quit()
@@ -364,7 +387,7 @@ def __close_ticket(driver):
         sleep(TIME_SLEEP)
         
     except Exception as e:
-        work.log(f"Ocorreu um erro na funcção (__close_ticket): {e} \n {e.__traceback__} \n {e.__cause__} \n {e.__context__} ")
+        work.log(f"Ocorreu um erro na funcção (__close_ticket): {e} \n  ")
 
 def check_div_exists(driver, div_id):
     try:
@@ -450,7 +473,7 @@ def get_data(driver):
                         break
                 
         except Exception as e:
-            work.log(f"Ocorreu um erro no laço de repetição while: {e} \n {e.__traceback__} \n {e.__cause__} \n {e.__context__} ")
+            work.log(f"Ocorreu um erro no laço de repetição while: {e} \n  ")
             continue
 
 def _set_hundred_page(driver):
@@ -483,9 +506,11 @@ def main():
                     get_data(driver)    
         else:
             work.log("Login failed")
+            
         driver.quit()
+        
     except Exception as e:
-        work.log(f"Ocorreu um erro na função main: {e} \n\n {e.__traceback__} \n {e.__cause__} \n {e.__context__} ")
+        work.log(f"Ocorreu um erro na função main: {e} \n\n  ")
         driver.quit() 
          # Ensure the driver is terminated in case of an error
     

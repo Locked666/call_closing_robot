@@ -25,7 +25,7 @@ from dotenv import dotenv_values
 global VERSION_SYS
 global MODE
 
-MODE =  'DEVELOPMENT'  # Pode ser 'PRODUCTION' ou 'DEVELOPMENT'
+MODE =  'PRODUCTION'  # Pode ser 'PRODUCTION' ou 'DEVELOPMENT'
 VERSION_SYS = "1.0.1" 
 
 
@@ -38,6 +38,7 @@ class WorkProcessThread(QThread):
     
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.execute =  ''
 
         from execute_web import work
         work.log_signal.connect(self.parent().update_oupdate_logtput)
@@ -45,12 +46,20 @@ class WorkProcessThread(QThread):
     def run(self):
         try:
             # Importa e executa o código principal
-            from execute_web import main  
-            main()
+            from execute_web import main, finished_driver 
+            self.execute  =  main()
+            self.func_finished = finished_driver
+        
+            
             self.finished_signal.emit()
         except Exception as e:
             self.finished_signal.emit(str(e))
 
+    def __func_finished(self):
+        self.func_finished()
+        self.deleteLater()
+        
+        
 
 def recurso_caminho(relativo):
     if hasattr(sys, '_MEIPASS'):
@@ -264,6 +273,7 @@ class MainWindow(QMainWindow,Ui_MainWindow):
             QMessageBox.warning(self, 'Atenção', 'Não existem configurações salvas.\nPor favor, configure antes de continuar.')
             self.open_configuracao(icon=icon)
             
+            
         self.actionConfigura_es.triggered.connect(lambda: self.open_configuracao(icon=icon))
         self.actionRespostas.triggered.connect(lambda: CadTexto(icon=icon).exec())
         self.pushButton.clicked.connect(self.start_process)
@@ -327,6 +337,8 @@ class MainWindow(QMainWindow,Ui_MainWindow):
         self.thread_log.terminate()  # Termina a thread se estiver em execução
         self.thread_log.quit()
         self.thread_log.deleteLater()
+        self.thread_log.__func_finished()  # Chama a função de finalização do driver
+        
         if getattr(self, '_finished_connected', False):
             try:
                 self.thread_log.finished_signal.disconnect(self.update_oupdate_logtput)
@@ -408,13 +420,24 @@ class MainWindow(QMainWindow,Ui_MainWindow):
         reply = QMessageBox.question(self, 'Confirmação', 'Você realmente deseja sair?',
                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         if reply == QMessageBox.Yes:
-            
-            event.accept()
             try:
-                self.thread_log.terminate()  # Termina a thread se estiver em execução
-                self.thread_log.quit()
+                if hasattr(self, 'thread_log') and self.thread_log.isRunning():
+                    self.thread_log.quit()
+                    self.thread_log.wait()
             except Exception as e:
-                pass
+                print(f"Erro ao encerrar thread: {e}")
+            try:
+                from execute_web import finished_driver
+                finished_driver()
+            except Exception as e:
+                print(f"Erro ao encerrar navegador: {e}")
+            event.accept()
+            # event.accept()
+            # try:
+            #     self.thread_log.terminate()  # Termina a thread se estiver em execução
+            #     self.thread_log.quit()
+            # except Exception as e:
+            #     pass
         else:
             event.ignore()
             
