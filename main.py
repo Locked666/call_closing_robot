@@ -25,8 +25,15 @@ from dotenv import dotenv_values
 global VERSION_SYS
 global MODE
 
-MODE =  'PRODUCTION'  # Pode ser 'PRODUCTION' ou 'DEVELOPMENT'
-VERSION_SYS = "1.0.1" 
+MODE = 'PRODUCTION'  #'PRODUCTION'  # Pode ser 'PRODUCTION' ou 'DEVELOPMENT'
+VERSION_SYS = "1.0.2"
+
+"""
+Alterações:
+1.0.2 - 08-07-2025
+    - Adiicionado botão para forçar fechamento do navegador.
+    - Adicionado botão para forçar fechamento da execução do processo.
+""" 
 
 
 
@@ -56,7 +63,7 @@ class WorkProcessThread(QThread):
             self.finished_signal.emit(str(e))
 
     def __func_finished(self):
-        self.func_finished()
+        # self.func_finished()
         self.deleteLater()
         
         
@@ -273,7 +280,11 @@ class MainWindow(QMainWindow,Ui_MainWindow):
             QMessageBox.warning(self, 'Atenção', 'Não existem configurações salvas.\nPor favor, configure antes de continuar.')
             self.open_configuracao(icon=icon)
             
-            
+        self.bnt_force_stop.setDisabled(True)
+        self.bnt_force_stop.clicked.connect(self._finaly_process)
+        self.bnt_force_close_browser.setDisabled(True)
+        self.bnt_force_close_browser.clicked.connect(self._force_close_browser)    
+        
         self.actionConfigura_es.triggered.connect(lambda: self.open_configuracao(icon=icon))
         self.actionRespostas.triggered.connect(lambda: CadTexto(icon=icon).exec())
         self.pushButton.clicked.connect(self.start_process)
@@ -281,6 +292,31 @@ class MainWindow(QMainWindow,Ui_MainWindow):
         self.bnt_clear_log.clicked.connect(self._clear_display_log)
         
         self.actionLog_de_Execus_o.triggered.connect(lambda: FrmLogExecusao(icon=icon).exec())
+    
+    
+    @Slot()
+    def _force_close_browser(self):
+        """Força o fechamento do navegador."""
+        command =  "taskkill /F /IM msedge.exe /T"
+        command_2 =  "taskkill /F /IM msedgedriver.exe /T"
+        
+        try:
+            from execute_web import finished_driver
+            os.system(command)
+            os.system(command_2)
+            finished_driver()
+            QMessageBox.information(self, "Fechamento Forçado", "O navegador foi fechado com sucesso.")
+        except Exception as e:
+            QMessageBox.critical(self, "Erro", f"Erro ao fechar o navegador: {str(e)}")
+            try:
+                os.system(command)
+                os.system(command_2)
+
+                QMessageBox.information(self, "Fechamento Forçado", "O navegador foi fechado com sucesso.")
+            except Exception as e:
+                os.system(command)
+                os.system(command_2)
+                QMessageBox.critical(self, "Erro", f"Erro ao Forçar fechamento do navegador: {str(e)}")    
     
     @Slot() 
     def _clear_display_log(self):
@@ -298,6 +334,8 @@ class MainWindow(QMainWindow,Ui_MainWindow):
     @Slot()
     def start_process(self):
         """Inicia o processo em uma thread separada"""
+        self.bnt_force_stop.setDisabled(False)
+        self.bnt_force_close_browser.setDisabled(False)
         self.pushButton.setDisabled(True)
         self.label.setText(QCoreApplication.translate("MainWindow", u"Processando, por favor aguarde... ", None))
         self.pushButton.setStyleSheet(u"QPushButton{\n"
@@ -423,7 +461,7 @@ class MainWindow(QMainWindow,Ui_MainWindow):
             try:
                 if hasattr(self, 'thread_log') and self.thread_log.isRunning():
                     self.thread_log.quit()
-                    self.thread_log.wait()
+                    # self.thread_log.wait()
             except Exception as e:
                 print(f"Erro ao encerrar thread: {e}")
             try:
@@ -432,12 +470,6 @@ class MainWindow(QMainWindow,Ui_MainWindow):
             except Exception as e:
                 print(f"Erro ao encerrar navegador: {e}")
             event.accept()
-            # event.accept()
-            # try:
-            #     self.thread_log.terminate()  # Termina a thread se estiver em execução
-            #     self.thread_log.quit()
-            # except Exception as e:
-            #     pass
         else:
             event.ignore()
             

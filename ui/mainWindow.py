@@ -69,6 +69,24 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_5.addWidget(self.check_param_browser)
 
+        self.widget = QWidget(self.groupBox)
+        self.widget.setObjectName(u"widget")
+        self.widget.setGeometry(QRect(210, 90, 241, 61))
+        self.horizontalLayout_2 = QHBoxLayout(self.widget)
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.horizontalLayout_2.setContentsMargins(5, 5, 5, 5)
+        self.bnt_force_stop = QPushButton(self.widget)
+        self.bnt_force_stop.setObjectName(u"bnt_force_stop")
+        self.bnt_force_stop.setMinimumSize(QSize(0, 50))
+
+        self.horizontalLayout_2.addWidget(self.bnt_force_stop)
+
+        self.bnt_force_close_browser = QPushButton(self.widget)
+        self.bnt_force_close_browser.setObjectName(u"bnt_force_close_browser")
+        self.bnt_force_close_browser.setMinimumSize(QSize(0, 50))
+
+        self.horizontalLayout_2.addWidget(self.bnt_force_close_browser)
+
         self.label = QLabel(self.frame_2)
         self.label.setObjectName(u"label")
         self.label.setGeometry(QRect(480, 0, 241, 101))
@@ -164,6 +182,14 @@ class Ui_MainWindow(object):
         self.actionLog_de_Execus_o.setText(QCoreApplication.translate("MainWindow", u"Log de Execus\u00e3o", None))
         self.groupBox.setTitle(QCoreApplication.translate("MainWindow", u"Parametros de Execu\u00e7\u00e3o", None))
         self.check_param_browser.setText(QCoreApplication.translate("MainWindow", u"Ocultar Navegador", None))
+#if QT_CONFIG(tooltip)
+        self.bnt_force_stop.setToolTip(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:12pt; font-weight:600;\">For\u00e7ar parada da execu\u00e7\u00e3o.</span></p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.bnt_force_stop.setText(QCoreApplication.translate("MainWindow", u"For\u00e7ar Parada.", None))
+#if QT_CONFIG(tooltip)
+        self.bnt_force_close_browser.setToolTip(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:9pt;\">For\u00e7ar fechamento do Navegador !!</span></p><p><span style=\" font-size:9pt; font-weight:600;\">Se tiver outras telas abertas no Edge, ser\u00e3o fechadas.</span></p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.bnt_force_close_browser.setText(QCoreApplication.translate("MainWindow", u"For\u00e7ar f.  navegador ", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"Execute com consci\u00eancia, lebresse, n\u00e3o existe retorno. ", None))
         self.pushButton.setText(QCoreApplication.translate("MainWindow", u"Executar", None))
         self.bnt_log.setText(QCoreApplication.translate("MainWindow", u"Salvar Log", None))
