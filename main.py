@@ -26,13 +26,20 @@ global VERSION_SYS
 global MODE
 
 MODE = 'PRODUCTION'  #'PRODUCTION'  # Pode ser 'PRODUCTION' ou 'DEVELOPMENT'
-VERSION_SYS = "1.0.2"
+VERSION_SYS = "1.0.3"
 
 """
 Alterações:
 1.0.2 - 08-07-2025
     - Adiicionado botão para forçar fechamento do navegador.
     - Adicionado botão para forçar fechamento da execução do processo.
+""" 
+
+"""
+1.0.3 - 09-07-2025
+    - Melhorado função de forçar fechamento do navegador.
+    - Melhorado função de forçar fechamento do processo.
+    
 """ 
 
 
@@ -65,8 +72,6 @@ class WorkProcessThread(QThread):
     def __func_finished(self):
         # self.func_finished()
         self.deleteLater()
-        
-        
 
 def recurso_caminho(relativo):
     if hasattr(sys, '_MEIPASS'):
@@ -74,7 +79,6 @@ def recurso_caminho(relativo):
     return os.path.join(os.path.abspath("."), relativo)
 
 
-    
 class CadTexto(QDialog,Ui_CadTexto):
     def __init__(self,icon:QIcon) -> None:
         super().__init__()
@@ -281,7 +285,7 @@ class MainWindow(QMainWindow,Ui_MainWindow):
             self.open_configuracao(icon=icon)
             
         self.bnt_force_stop.setDisabled(True)
-        self.bnt_force_stop.clicked.connect(self._finaly_process)
+        self.bnt_force_stop.clicked.connect(self.force_stop_process)
         self.bnt_force_close_browser.setDisabled(True)
         self.bnt_force_close_browser.clicked.connect(self._force_close_browser)    
         
@@ -371,6 +375,47 @@ class MainWindow(QMainWindow,Ui_MainWindow):
 "")
               
 
+    @Slot()
+    def force_stop_process(self):
+        """Força a parada do processo."""
+        command_2 =  "taskkill /F /IM msedgedriver.exe /T"
+        if hasattr(self, 'thread_log') and self.thread_log.isRunning():
+            os.system(command_2)
+            self.thread_log.terminate()
+            self.thread_log.quit()
+            self.thread_log.deleteLater()
+            self.plainTextEdit.appendPlainText("Processo interrompido pelo usuário.")
+            self.pushButton.setDisabled(False)
+            self.label.setText(QCoreApplication.translate("MainWindow", u"Processo interrompido pelo usu\u00e1rio.", None))
+            self.pushButton.setStyleSheet(u"QPushButton{\n"
+"font: 75 italic 10pt \"Sitka Subheading\";\n"
+"background-color: rgb(170, 255, 0);\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"background-color: rgb(255, 0, 0);\n"
+"	font: 10pt \"Nirmala UI\";\n"
+"\n"
+"}\n"
+"")
+        else:
+            QMessageBox.warning(self, "Atenção", "Nenhum processo em execução para ser interrompido.")
+            self.pushButton.setDisabled(False)
+            self.label.setText(QCoreApplication.translate("MainWindow", u"Nenhum processo em execu\u00e7\u00e3o.", None))
+            self.pushButton.setStyleSheet(u"QPushButton{\n"
+"font: 75 italic 10pt \"Sitka Subheading\";\n"
+"background-color: rgb(170, 255, 0);\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"background-color: rgb(255, 0, 0);\n"
+"	font: 10pt \"Nirmala UI\";\n"
+"\n"
+"}\n"
+"")
+    
+    
+    
     def _finaly_process(self):
         self.thread_log.terminate()  # Termina a thread se estiver em execução
         self.thread_log.quit()
@@ -458,6 +503,9 @@ class MainWindow(QMainWindow,Ui_MainWindow):
         reply = QMessageBox.question(self, 'Confirmação', 'Você realmente deseja sair?',
                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         if reply == QMessageBox.Yes:
+            self._finaly_process()
+            self.force_stop_process()
+            
             try:
                 if hasattr(self, 'thread_log') and self.thread_log.isRunning():
                     self.thread_log.quit()

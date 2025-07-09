@@ -173,6 +173,7 @@ def _set_filter_ticket(driver):
 
 def _group_ticket(driver):
     try:
+        work.log("Agrupando tickets")
         # Wait until the modal is present
         WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "modal-chamados-vinculados-id")))
         
