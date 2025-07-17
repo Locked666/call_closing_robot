@@ -26,7 +26,7 @@ global VERSION_SYS
 global MODE
 
 MODE = 'PRODUCTION'  #'PRODUCTION'  # Pode ser 'PRODUCTION' ou 'DEVELOPMENT'
-VERSION_SYS = "1.0.3"
+VERSION_SYS = "1.0.5"
 
 """
 Alterações:
@@ -41,9 +41,20 @@ Alterações:
     - Melhorado função de forçar fechamento do processo.
     
 """ 
+"""
+1.0.4 - 17-07-2025
+    - Corrigindo conexão com edgedriver que estava dando erro de conexão.
+    - Adicionado tratamento de exceção para o botão de salvar log.
+    
+""" 
 
-
-
+"""
+1.0.5 - 17-07-2025
+    - Corrigido  mensagem de nosuchelementexception ao clicar no botão de atualizar ticket.
+    - Corrigido mensagem de nosuchelementexception ao mudar o cSistema do ticket.
+    
+    
+""" 
 
 
 class WorkProcessThread(QThread):

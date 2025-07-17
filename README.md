@@ -1,9 +1,13 @@
-*Call Closing Robot
+# Call Closing Robot
 
+execute build pro prod:
 
-execute build pro prod: 
-```pyinstaller --onefile --noconsole --i ico.ico --add-data "ico.ico;." --name CallClosingRobot   main.py ```
+```bash
+pyinstaller --onefile --noconsole --i ico.ico --add-data "ico.ico;." --add-data "utils;utils" --name CallClosingRobot   main.py
+```
 
+for developed:
 
-for developed: 
-```pyinstaller --onefile --i ico.ico --add-data "ico.ico;." --name CallClosingRobot   main.py```
+```bash
+pyinstaller --onefile --i ico.ico --add-data "ico.ico;." --add-data "utils;utils" --name CallClosingRobot   main.py
+```

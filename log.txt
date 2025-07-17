@@ -75,3 +75,90 @@ Verificando na aba Chamados Vinculados.
 Existe chamados vinculados, mas não estão encerrados.
 Todos os Tickets Foram Processados 2025-06-25 15:08:46.459539
 Navegador encerrado corretamente
+Log de Execução
+Iniciando o processo...
+Iniciando Edge sem perfil personalizado...
+Sucesso ao realizar Login
+-------------------------------------------------------------------
+Total: 8 - Executado: 0 - Restante: 8
+
+-------------------------------------------------------------------
+Processando: https://qualitysistemas.com.br/intranet/index.php?conteudo=sac_ticketaberto&id=120905
+Alterando ticket
+
+Preenchendo informações do ticket
+
+O elemento 'cSistema' não foi encontrado.
+
+O elemento 'cResponsavel' não foi encontrado.
+
+O elemento 'sPrevisao' não foi encontrado.
+Ocorreu um erro na função(__alter_ticket) principal : Message: 
+Stacktrace:
+	GetHandleVerifier [0x0x7ff65e0a8c85+23461]
+	(No symbol) [0x0x7ff65dffcd70]
+	GetHandleVerifier [0x0x7ff65e320bb8+2611928]
+	(No symbol) [0x0x7ff65de191a8]
+	(No symbol) [0x0x7ff65de1946b]
+	(No symbol) [0x0x7ff65de59a67]
+	(No symbol) [0x0x7ff65de3a6ff]
+	(No symbol) [0x0x7ff65de0f58d]
+	(No symbol) [0x0x7ff65de5754f]
+	(No symbol) [0x0x7ff65de3a423]
+	(No symbol) [0x0x7ff65de0ea86]
+	(No symbol) [0x0x7ff65de0dd11]
+	(No symbol) [0x0x7ff65de0e8b3]
+	(No symbol) [0x0x7ff65df0e6fd]
+	(No symbol) [0x0x7ff65df1ba88]
+	GetHandleVerifier [0x0x7ff65e188acb+940523]
+	GetHandleVerifier [0x0x7ff65e191821+976705]
+	(No symbol) [0x0x7ff65e00a961]
+	(No symbol) [0x0x7ff65e003344]
+	(No symbol) [0x0x7ff65e003493]
+	(No symbol) [0x0x7ff65dff4f36]
+	BaseThreadInitThunk [0x0x7ffc08137034+20]
+	RtlUserThreadStart [0x0x7ffc09582651+33]
+ 
+  
+-------------------------------------------------------------------
+Total: 8 - Executado: 1 - Restante: 7
+
+-------------------------------------------------------------------
+Processando: https://qualitysistemas.com.br/intranet/index.php?conteudo=sac_ticketaberto&id=120801
+Alterando ticket
+
+Preenchendo informações do ticket
+
+O elemento 'cSistema' não foi encontrado.
+
+O elemento 'cResponsavel' não foi encontrado.
+
+O elemento 'sPrevisao' não foi encontrado.
+Ocorreu um erro na função(__alter_ticket) principal : Message: 
+Stacktrace:
+	GetHandleVerifier [0x0x7ff65e0a8c85+23461]
+	(No symbol) [0x0x7ff65dffcd70]
+	GetHandleVerifier [0x0x7ff65e320bb8+2611928]
+	(No symbol) [0x0x7ff65de191a8]
+	(No symbol) [0x0x7ff65de1946b]
+	(No symbol) [0x0x7ff65de59a67]
+	(No symbol) [0x0x7ff65de3a6ff]
+	(No symbol) [0x0x7ff65de0f58d]
+	(No symbol) [0x0x7ff65de5754f]
+	(No symbol) [0x0x7ff65de3a423]
+	(No symbol) [0x0x7ff65de0ea86]
+	(No symbol) [0x0x7ff65de0dd11]
+	(No symbol) [0x0x7ff65de0e8b3]
+	(No symbol) [0x0x7ff65df0e6fd]
+	(No symbol) [0x0x7ff65df1ba88]
+	GetHandleVerifier [0x0x7ff65e188acb+940523]
+	GetHandleVerifier [0x0x7ff65e191821+976705]
+	(No symbol) [0x0x7ff65e00a961]
+	(No symbol) [0x0x7ff65e003344]
+	(No symbol) [0x0x7ff65e003493]
+	(No symbol) [0x0x7ff65dff4f36]
+	BaseThreadInitThunk [0x0x7ffc08137034+20]
+	RtlUserThreadStart [0x0x7ffc09582651+33]
+ 
+  
+Processo interrompido pelo usuário.

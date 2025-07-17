@@ -11,7 +11,8 @@ from webdriver_manager.microsoft import EdgeChromiumDriverManager # Import the E
 from PySide6.QtCore import QObject, Signal
 from datetime import datetime
 from time import sleep, time
-# import uuid
+import platform
+import os
 import tempfile
 # import os 
 import sys
@@ -72,7 +73,6 @@ def finished_driver():
 def _close_system_ticket():
     sys.exit(0)
 
-
 def open_browser():
     def build_options(user_data_dir=None):
         options = Options()
@@ -85,10 +85,22 @@ def open_browser():
         options.add_argument("--disable-dev-shm-usage")
         return options
 
+    # Detecta se está rodando em .exe (PyInstaller)
+    def resource_path(relative_path):
+        if hasattr(sys, '_MEIPASS'):  # Quando compilado com PyInstaller
+            return os.path.join(sys._MEIPASS, relative_path)
+        return os.path.abspath(relative_path)
+
+    # Determina qual driver usar com base na arquitetura
+    arch = platform.architecture()[0]
+    if arch == '32bit':
+        driver_path = resource_path("utils/edgedriver_win32/msedgedriver.exe")
+    else:
+        driver_path = resource_path("utils/edgedriver_win64/msedgedriver.exe")
+
     try:
-        # Tentativa sem perfil customizado
         work.log("Iniciando Edge sem perfil personalizado...")
-        s = Service(EdgeChromiumDriverManager().install())
+        s = Service(driver_path)
         driver = webdriver.Edge(service=s, options=build_options())
         return driver
 
@@ -99,7 +111,39 @@ def open_browser():
             driver = webdriver.Edge(service=s, options=build_options(user_data_dir=temp_profile))
             return driver
         else:
-            raise e   
+            work.log(f"Erro ao iniciar o Edge: {e}")
+            raise e
+
+
+
+# Correção de fora de area
+# def open_browser():
+#     def build_options(user_data_dir=None):
+#         options = Options()
+#         if user_data_dir:
+#             options.add_argument(f"--user-data-dir={user_data_dir}")
+#         options.add_argument("--disable-features=EdgeSignin")
+#         options.add_argument("--disable-gpu")
+#         options.add_argument("--headless")
+#         options.add_argument("--no-sandbox")
+#         options.add_argument("--disable-dev-shm-usage")
+#         return options
+
+#     try:
+#         # Tentativa sem perfil customizado
+#         work.log("Iniciando Edge sem perfil personalizado...")
+#         s = Service(EdgeChromiumDriverManager().install())
+#         driver = webdriver.Edge(service=s, options=build_options())
+#         return driver
+
+#     except WebDriverException as e:
+#         if "user data directory is already in use" in str(e):
+#             work.log("Perfil padrão está em uso. Tentando com perfil temporário...")
+#             temp_profile = tempfile.mkdtemp()
+#             driver = webdriver.Edge(service=s, options=build_options(user_data_dir=temp_profile))
+#             return driver
+#         else:
+#             raise e   
 
 # def open_browser():
 #     # Set the path to the edgedriver
@@ -276,39 +320,61 @@ def __randon_system_closed(n_system:list = []):
         work.log(f"An error occurred: {e}")
 
 def __execute_preencimento(driver):
+    
     try: 
-        sistema_select_sistema = Select(driver.find_element(By.ID, "cSistema"))
+        work.log("\nPreenchendo informações do ticket")
         
-        # Pega todos os elementos <option> do <select>
-        options = sistema_select_sistema.options
+        ## # Verifica se Existe o elemento cSistema
+        try:
+            sistema_select_sistema = Select(driver.find_element(By.ID, "cSistema"))
+            # Pega todos os elementos <option> do <select>
+            options = sistema_select_sistema.options
 
-        # Cria uma lista com os values de cada option
-        values_in_select_cSistema = [option.get_attribute("value") for option in options]
+            # Cria uma lista com os values de cada option
+            values_in_select_cSistema = [option.get_attribute("value") for option in options]
+            
+            # Try to select by value
+            sistema_select_sistema.select_by_value(__randon_system_closed(values_in_select_cSistema))
+        except NoSuchElementException:
+            work.log("\nO elemento 'cSistema' não foi encontrado.")
+                
         
-        # Try to select by value
-        sistema_select_sistema.select_by_value(__randon_system_closed(values_in_select_cSistema))
+        
         
         # 2. Check if "cResponsavel" is empty; if so, set it to the first option
-        responsavel_select = Select(driver.find_element(By.ID, "cResponsavel"))
-        if responsavel_select.first_selected_option.get_attribute("value") == "0":  # If "responsável" is selected
-            responsavel_select.select_by_index(1)  # Select the first available option
+        try:
+            responsavel_select = Select(driver.find_element(By.ID, "cResponsavel"))
+            if responsavel_select.first_selected_option.get_attribute("value") == "0":  # If "responsável" is selected
+                responsavel_select.select_by_index(1)  # Select the first available option
+        except NoSuchElementException:
+            work.log("\nO elemento 'cResponsavel' não foi encontrado.")
+                    
         
         # 3. Set "sPrevisao" to the current date in "dd/mm/yyyy" format
-        previsao_input = driver.find_element(By.ID, "sPrevisao")
-        current_date = datetime.now().strftime("%d/%m/%Y")
-        previsao_input.clear()  # Clear any existing value
-        previsao_input.send_keys(current_date)  # Set the current date
+        try:
+            previsao_input = driver.find_element(By.ID, "sPrevisao")
+            current_date = datetime.now().strftime("%d/%m/%Y")
+            previsao_input.clear()  # Clear any existing value
+            previsao_input.send_keys(current_date)  # Set the current date
+        except NoSuchElementException:
+            work.log("\nO elemento 'sPrevisao' não foi encontrado.")
+            return
+                
         
         # 4. Click the "Salvar" button
+        try:
+            update_ticket_button = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.ID, "btAtualizar"))
+            )
+            update_ticket_button.click()  
+            
+            __handle_alert(driver)
+        except NoSuchElementException:
+            work.log("\nO botão 'btAtualizar' não foi encontrado.")
+            return   
         
-        update_ticket_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.ID, "btAtualizar"))
-        )
-        update_ticket_button.click()  
+    except ValueError as e:
         
-        __handle_alert(driver)
-        
-    except Exception as e:
         if MODE_DEBUG: 
             work.log(f"Ocorreu um erro na função(__execute_preencimento) first tray : {e} \n  ")
         else: 
@@ -344,14 +410,24 @@ def __alter_ticket(driver):
                 work.log("Não existe linhas na tabela.")
                 __execute_preencimento(driver) 
                 
-        else : 
-            __execute_preencimento(driver)            
+        else :
+            try: 
+                __execute_preencimento(driver)
+            except Exception as e:
+                work.log(f"Ocorreu um erro ao executar o preenchimento do ticket : {e}")
+                return                
             
-            
-        __close_ticket(driver)
+        try:    
+            __close_ticket(driver)
+        except Exception as e:
+            work.log(f"Ocorreu um erro ao fechar o ticket: {e}")
+            return    
     
-    except Exception as e:
-        work.log(f"Ocorreu um erro na função(__alter_ticket) principal : {e} \n  ")
+    except ValueError as e:
+        if MODE_DEBUG: 
+            work.log(f"Ocorreu um erro na função(__alter_ticket) principal : {e} \n ") 
+        else:    
+            work.log(f"Ocorreu um erro na função(__alter_ticket) principal.  ")
          
     
     # driver.quit()
@@ -365,6 +441,7 @@ def __close_ticket(driver):
             EC.element_to_be_clickable((By.ID, "btAtribuir"))
         )
         close_ticket_button.click()
+        
     except Exception as e:
         work.log(f"Ocorreu um erro ao clicar no botão de encerrar: {e}")      
 
@@ -524,6 +601,7 @@ def main():
     
 if __name__ == "__main__":
 
-    main() # Call the main function
+    # main() # Call the main function
+    open_browser()  # Open the browser to test the function
 
       
