@@ -110,6 +110,17 @@ def open_browser():
             temp_profile = tempfile.mkdtemp()
             driver = webdriver.Edge(service=s, options=build_options(user_data_dir=temp_profile))
             return driver
+        elif "This version of Microsoft Edge WebDriver only supports Microsoft Edge version" in str(e):
+            work.log("Versão do Edge incompatível com o WebDriver. Utilizando versao 140")
+            if arch == '32bit':
+                path_driver_140 = resource_path("utils/versio_14003/edgedriver_win32/msedgedriver.exe")
+            else:    
+                path_driver_140 = resource_path("utils/versio_14003/edgedriver_win64/msedgedriver.exe")
+                
+            driver = webdriver.Edge(service=Service(path_driver_140), options=build_options())
+            
+            return driver
+        
         else:
             work.log(f"Erro ao iniciar o Edge: {e}")
             raise e

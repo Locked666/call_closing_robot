@@ -26,7 +26,7 @@ global VERSION_SYS
 global MODE
 
 MODE = 'PRODUCTION'  #'PRODUCTION'  # Pode ser 'PRODUCTION' ou 'DEVELOPMENT'
-VERSION_SYS = "1.0.5"
+VERSION_SYS = "1.0.0.6"
 
 """
 Alterações:
@@ -55,6 +55,12 @@ Alterações:
     
     
 """ 
+
+"""
+1.0.6 - 24-07-2025
+    - Corrigido erro ao iniciar o Edge quando a versão do Edge é incompatível com o WebDriver.
+    - Adicionado verificação de versão do Edge ao iniciar o Edge.
+"""
 
 
 class WorkProcessThread(QThread):
@@ -315,23 +321,34 @@ class MainWindow(QMainWindow,Ui_MainWindow):
         command =  "taskkill /F /IM msedge.exe /T"
         command_2 =  "taskkill /F /IM msedgedriver.exe /T"
         
+        mensage =  QMessageBox.question(self, "Confirmação", "Você realmente deseja fechar o navegador \n Utilizando essa função todo navegador edge irá fechar.?",
+                                        QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        if mensage == QMessageBox.No:
+            return
+        
+
         try:
             from execute_web import finished_driver
+            QMessageBox.information(self, "Fechamento Forçado", "O navegador foi fechado com sucesso.")
             os.system(command)
             os.system(command_2)
             finished_driver()
-            QMessageBox.information(self, "Fechamento Forçado", "O navegador foi fechado com sucesso.")
+            
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao fechar o navegador: {str(e)}")
             try:
-                os.system(command)
-                os.system(command_2)
-
                 QMessageBox.information(self, "Fechamento Forçado", "O navegador foi fechado com sucesso.")
-            except Exception as e:
                 os.system(command)
                 os.system(command_2)
-                QMessageBox.critical(self, "Erro", f"Erro ao Forçar fechamento do navegador: {str(e)}")    
+                # sys.exit(0)
+
+                
+            except Exception as e:
+                QMessageBox.critical(self, "Erro", f"Erro ao Forçar fechamento do navegador: {str(e)}")  
+                os.system(command)
+                os.system(command_2)
+                # sys.exit(0)
+                  
     
     @Slot() 
     def _clear_display_log(self):
