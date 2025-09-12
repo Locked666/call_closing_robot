@@ -26,7 +26,7 @@ global VERSION_SYS
 global MODE
 
 MODE = 'PRODUCTION'  #'PRODUCTION'  # Pode ser 'PRODUCTION' ou 'DEVELOPMENT'
-VERSION_SYS = "1.0.0.6"
+VERSION_SYS = "1.0.0.7"
 
 """
 Alterações:
@@ -57,9 +57,14 @@ Alterações:
 """ 
 
 """
-1.0.6 - 24-07-2025
+1.0.6 - 10-09-2025
     - Corrigido erro ao iniciar o Edge quando a versão do Edge é incompatível com o WebDriver.
     - Adicionado verificação de versão do Edge ao iniciar o Edge.
+"""
+
+"""
+1.0.7 - 12-09-2025
+    - Removido arquivos desnecessários do projeto. (zip webdriver)
 """
 
 

@@ -110,6 +110,7 @@ def open_browser():
             temp_profile = tempfile.mkdtemp()
             driver = webdriver.Edge(service=s, options=build_options(user_data_dir=temp_profile))
             return driver
+        
         elif "This version of Microsoft Edge WebDriver only supports Microsoft Edge version" in str(e):
             work.log("Versão do Edge incompatível com o WebDriver. Utilizando versao 140")
             if arch == '32bit':
@@ -348,10 +349,7 @@ def __execute_preencimento(driver):
             sistema_select_sistema.select_by_value(__randon_system_closed(values_in_select_cSistema))
         except NoSuchElementException:
             work.log("\nO elemento 'cSistema' não foi encontrado.")
-                
-        
-        
-        
+
         # 2. Check if "cResponsavel" is empty; if so, set it to the first option
         try:
             responsavel_select = Select(driver.find_element(By.ID, "cResponsavel"))
