@@ -16,10 +16,10 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QIcon, QImage, QKeySequence, QLinearGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
-from PySide6.QtWidgets import (QApplication, QCheckBox, QFrame, QGroupBox,
-    QHBoxLayout, QLabel, QMainWindow, QMenu,
-    QMenuBar, QPlainTextEdit, QPushButton, QSizePolicy,
-    QStatusBar, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFrame,
+    QGroupBox, QHBoxLayout, QLabel, QMainWindow,
+    QMenu, QMenuBar, QPlainTextEdit, QPushButton,
+    QSizePolicy, QStatusBar, QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -71,8 +71,28 @@ class Ui_MainWindow(object):
 
         self.widget = QWidget(self.groupBox)
         self.widget.setObjectName(u"widget")
-        self.widget.setGeometry(QRect(210, 90, 241, 61))
-        self.horizontalLayout_2 = QHBoxLayout(self.widget)
+        self.widget.setGeometry(QRect(200, 20, 241, 121))
+        self.verticalLayout_6 = QVBoxLayout(self.widget)
+        self.verticalLayout_6.setObjectName(u"verticalLayout_6")
+        self.verticalLayout_6.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_4 = QVBoxLayout()
+        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
+        self.label_2 = QLabel(self.widget)
+        self.label_2.setObjectName(u"label_2")
+
+        self.verticalLayout_4.addWidget(self.label_2)
+
+        self.combobox_browser = QComboBox(self.widget)
+        self.combobox_browser.addItem("")
+        self.combobox_browser.addItem("")
+        self.combobox_browser.setObjectName(u"combobox_browser")
+
+        self.verticalLayout_4.addWidget(self.combobox_browser)
+
+
+        self.verticalLayout_6.addLayout(self.verticalLayout_4)
+
+        self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.horizontalLayout_2.setContentsMargins(5, 5, 5, 5)
         self.bnt_force_stop = QPushButton(self.widget)
@@ -86,6 +106,9 @@ class Ui_MainWindow(object):
         self.bnt_force_close_browser.setMinimumSize(QSize(0, 50))
 
         self.horizontalLayout_2.addWidget(self.bnt_force_close_browser)
+
+
+        self.verticalLayout_6.addLayout(self.horizontalLayout_2)
 
         self.label = QLabel(self.frame_2)
         self.label.setObjectName(u"label")
@@ -182,6 +205,13 @@ class Ui_MainWindow(object):
         self.actionLog_de_Execus_o.setText(QCoreApplication.translate("MainWindow", u"Log de Execus\u00e3o", None))
         self.groupBox.setTitle(QCoreApplication.translate("MainWindow", u"Parametros de Execu\u00e7\u00e3o", None))
         self.check_param_browser.setText(QCoreApplication.translate("MainWindow", u"Ocultar Navegador", None))
+        self.label_2.setText(QCoreApplication.translate("MainWindow", u"Navegador", None))
+        self.combobox_browser.setItemText(0, QCoreApplication.translate("MainWindow", u"FireFox", None))
+        self.combobox_browser.setItemText(1, QCoreApplication.translate("MainWindow", u"Edge", None))
+
+#if QT_CONFIG(tooltip)
+        self.combobox_browser.setToolTip(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Selecione o Navegador para usar!</span></p><p><br/></p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
         self.bnt_force_stop.setToolTip(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:12pt; font-weight:600;\">For\u00e7ar parada da execu\u00e7\u00e3o.</span></p></body></html>", None))
 #endif // QT_CONFIG(tooltip)

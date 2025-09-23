@@ -26,7 +26,7 @@ global VERSION_SYS
 global MODE
 
 MODE = 'PRODUCTION'  #'PRODUCTION'  # Pode ser 'PRODUCTION' ou 'DEVELOPMENT'
-VERSION_SYS = "1.0.0.7"
+VERSION_SYS = "1.0.0.8"
 
 """
 Alterações:
@@ -65,6 +65,11 @@ Alterações:
 """
 1.0.7 - 12-09-2025
     - Removido arquivos desnecessários do projeto. (zip webdriver)
+"""
+
+"""
+1.0.8 - 23-09-2025
+    - Adicionado a opção de realizar o processo pelo FireFox devido a erro de ssl do site.
 """
 
 
@@ -317,14 +322,42 @@ class MainWindow(QMainWindow,Ui_MainWindow):
         self.bnt_log.clicked.connect(self.call_save_log)
         self.bnt_clear_log.clicked.connect(self._clear_display_log)
         
+        self.combobox_browser.setCurrentText(self.config_env.get('USE_BROWSER','FireFox'))
+        
+        self.combobox_browser.currentTextChanged.connect(self._chance_selected_browser)
+        
         self.actionLog_de_Execus_o.triggered.connect(lambda: FrmLogExecusao(icon=icon).exec())
     
+    
+    @Slot(str)
+    def _chance_selected_browser(self, text):
+        
+        try: 
+            self.config_env['USE_BROWSER'] = text
+            with open('.env', 'w') as f:
+                for key in self.config_env:
+                        f.write(f"{key}={self.config_env[key]}\n")
+            
+        except Exception as e: 
+            QMessageBox.information(self, "Warning", f"Ocorreu um erro ao alterar o Broweser: {e}")
+                
+                
+        
+
+        
     
     @Slot()
     def _force_close_browser(self):
         """Força o fechamento do navegador."""
-        command =  "taskkill /F /IM msedge.exe /T"
-        command_2 =  "taskkill /F /IM msedgedriver.exe /T"
+        if self.config_env.get('USE_BROWSER', 'FireFox') == 'Edge':
+        
+            command =  "taskkill /F /IM msedge.exe /T"
+            command_2 =  "taskkill /F /IM msedgedriver.exe /T"
+        
+        else:
+            command =  "taskkill /F /IM firefox.exe /T"
+            command_2 =  "taskkill /F /IM geckodriver.exe.exe /T"
+                
         
         mensage =  QMessageBox.question(self, "Confirmação", "Você realmente deseja fechar o navegador \n Utilizando essa função todo navegador edge irá fechar.?",
                                         QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
@@ -411,49 +444,63 @@ class MainWindow(QMainWindow,Ui_MainWindow):
     @Slot()
     def force_stop_process(self):
         """Força a parada do processo."""
-        command_2 =  "taskkill /F /IM msedgedriver.exe /T"
-        if hasattr(self, 'thread_log') and self.thread_log.isRunning():
+        if self.config_env.get('USE_BROWSER', 'FireFox') == 'Edge':
+            command_2 =  "taskkill /F /IM msedgedriver.exe /T"
+        else: 
+            command_2 =  "taskkill /F /IM geckodriver.exe /T"
+        
+        try:    
+            if hasattr(self, 'thread_log') and self.thread_log.isRunning():
+                os.system(command_2)
+                self.thread_log.terminate()
+                self.thread_log.quit()
+                self.thread_log.deleteLater()
+                self.plainTextEdit.appendPlainText("Processo interrompido pelo usuário.")
+                self.pushButton.setDisabled(False)
+                self.label.setText(QCoreApplication.translate("MainWindow", u"Processo interrompido pelo usu\u00e1rio.", None))
+                self.pushButton.setStyleSheet(u"QPushButton{\n"
+    "font: 75 italic 10pt \"Sitka Subheading\";\n"
+    "background-color: rgb(170, 255, 0);\n"
+    "}\n"
+    "\n"
+    "QPushButton:pressed {\n"
+    "background-color: rgb(255, 0, 0);\n"
+    "	font: 10pt \"Nirmala UI\";\n"
+    "\n"
+    "}\n"
+    "")
+            else:
+                QMessageBox.warning(self, "Atenção", "Nenhum processo em execução para ser interrompido.")
+                self.pushButton.setDisabled(False)
+                self.label.setText(QCoreApplication.translate("MainWindow", u"Nenhum processo em execu\u00e7\u00e3o.", None))
+                self.pushButton.setStyleSheet(u"QPushButton{\n"
+    "font: 75 italic 10pt \"Sitka Subheading\";\n"
+    "background-color: rgb(170, 255, 0);\n"
+    "}\n"
+    "\n"
+    "QPushButton:pressed {\n"
+    "background-color: rgb(255, 0, 0);\n"
+    "	font: 10pt \"Nirmala UI\";\n"
+    "\n"
+    "}\n"
+    "")
+        
+        except Exception as e:  
+            if self.config_env.get('USE_BROWSER', 'FireFox') == 'Edge':
+                command_2 =  "taskkill /F /IM msedgedriver.exe /T"
+            else: 
+                command_2 =  "taskkill /F /IM geckodriver.exe /T"           
             os.system(command_2)
-            self.thread_log.terminate()
-            self.thread_log.quit()
-            self.thread_log.deleteLater()
-            self.plainTextEdit.appendPlainText("Processo interrompido pelo usuário.")
-            self.pushButton.setDisabled(False)
-            self.label.setText(QCoreApplication.translate("MainWindow", u"Processo interrompido pelo usu\u00e1rio.", None))
-            self.pushButton.setStyleSheet(u"QPushButton{\n"
-"font: 75 italic 10pt \"Sitka Subheading\";\n"
-"background-color: rgb(170, 255, 0);\n"
-"}\n"
-"\n"
-"QPushButton:pressed {\n"
-"background-color: rgb(255, 0, 0);\n"
-"	font: 10pt \"Nirmala UI\";\n"
-"\n"
-"}\n"
-"")
-        else:
-            QMessageBox.warning(self, "Atenção", "Nenhum processo em execução para ser interrompido.")
-            self.pushButton.setDisabled(False)
-            self.label.setText(QCoreApplication.translate("MainWindow", u"Nenhum processo em execu\u00e7\u00e3o.", None))
-            self.pushButton.setStyleSheet(u"QPushButton{\n"
-"font: 75 italic 10pt \"Sitka Subheading\";\n"
-"background-color: rgb(170, 255, 0);\n"
-"}\n"
-"\n"
-"QPushButton:pressed {\n"
-"background-color: rgb(255, 0, 0);\n"
-"	font: 10pt \"Nirmala UI\";\n"
-"\n"
-"}\n"
-"")
-    
-    
+
     
     def _finaly_process(self):
-        self.thread_log.terminate()  # Termina a thread se estiver em execução
-        self.thread_log.quit()
-        self.thread_log.deleteLater()
-        self.thread_log.__func_finished()  # Chama a função de finalização do driver
+        try:
+            self.thread_log.terminate()  # Termina a thread se estiver em execução
+            self.thread_log.quit()
+            self.thread_log.deleteLater()
+            self.thread_log.__func_finished()  # Chama a função de finalização do driver
+        except Exception as e: 
+            QMessageBox.information(self,'Warning', f"Sem processo a ser finalizado:")   
         
         if getattr(self, '_finished_connected', False):
             try:
@@ -562,7 +609,20 @@ if __name__ == "__main__":
             f.write("MY_SECRET_USERNAME=\n")
             f.write("MY_SECRET_PASSWORD=\n")
             f.write("URL_INIT='https://qualitysistemas.com.br/intranet/index.php?conteudo=sac_tickets'\n")
+            f.write("USE_BROWSER=FireFox") 
+    
+    config_env = dotenv_values('.env')
+    
+    if config_env.get("USE_BROWSER", None) == None : 
+        
+       with open(".env", "w", encoding='UTF8') as f:
+            f.write(f"MY_SECRET_USERNAME={config_env.get("MY_SECRET_USERNAME", "")}\n")
+            f.write(f"MY_SECRET_PASSWORD={config_env.get("MY_SECRET_PASSWORD", "")}\n")
+            f.write("URL_INIT='https://qualitysistemas.com.br/intranet/index.php?conteudo=sac_tickets'\n")
+            f.write("USE_BROWSER=FireFox")  
+        
             
+                   
     app = QApplication(sys.argv)
     app.setStyleSheet(qdarktheme.load_stylesheet('dark'))
     window = MainWindow()

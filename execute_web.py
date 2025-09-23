@@ -4,10 +4,14 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.alert import Alert
 from selenium.webdriver.edge.service import Service
 from selenium.webdriver.edge.options import Options
+from selenium.webdriver.firefox.service import Service as FireService
+from selenium.webdriver.firefox.options import Options as FireOptions
+# from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
+
 from selenium.webdriver.support.ui import WebDriverWait,Select
 from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException,WebDriverException
 from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.microsoft import EdgeChromiumDriverManager # Import the Edge driver manager
+# from webdriver_manager.microsoft import EdgeChromiumDriverManager # Import the Edge driver manager
 from PySide6.QtCore import QObject, Signal
 from datetime import datetime
 from time import sleep, time
@@ -29,6 +33,8 @@ config = dotenv_values(".env")
 URL = config['URL_INIT']
 USERNAME = config['MY_SECRET_USERNAME']
 PASSWORD = config['MY_SECRET_PASSWORD']
+BROWSER = config['USE_BROWSER']
+
 try:
     MODE_DEBUG = config['MODE_DEBUG'] == 'True'  # Convert string to boolean
 except KeyError:
@@ -73,14 +79,21 @@ def finished_driver():
 def _close_system_ticket():
     sys.exit(0)
 
-def open_browser():
+
+def __get_architecture() -> str:
+    arch = platform.architecture()[0]
+    return str(arch)
+    
+
+
+def open_browser_edge():
     def build_options(user_data_dir=None):
         options = Options()
         if user_data_dir:
             options.add_argument(f"--user-data-dir={user_data_dir}")
         options.add_argument("--disable-features=EdgeSignin")
         options.add_argument("--disable-gpu")
-        #options.add_argument("--headless")
+        options.add_argument("--headless")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
         return options
@@ -92,8 +105,8 @@ def open_browser():
         return os.path.abspath(relative_path)
 
     # Determina qual driver usar com base na arquitetura
-    arch = platform.architecture()[0]
-    if arch == '32bit':
+    # arch = platform.architecture()[0]
+    if __get_architecture() == '32bit':
         driver_path = resource_path("utils/edgedriver_win32/msedgedriver.exe")
     else:
         driver_path = resource_path("utils/edgedriver_win64/msedgedriver.exe")
@@ -113,7 +126,7 @@ def open_browser():
         
         elif "This version of Microsoft Edge WebDriver only supports Microsoft Edge version" in str(e):
             work.log("Versão do Edge incompatível com o WebDriver. Utilizando versao 140")
-            if arch == '32bit':
+            if __get_architecture() == '32bit':
                 path_driver_140 = resource_path("utils/versio_14003/edgedriver_win32/msedgedriver.exe")
             else:    
                 path_driver_140 = resource_path("utils/versio_14003/edgedriver_win64/msedgedriver.exe")
@@ -127,6 +140,46 @@ def open_browser():
             raise e
 
 
+
+def open_browser_firefox():
+    driver_path_firefox = None 
+    def build_options_fire(user_data_dir=None):
+        options = webdriver.FirefoxOptions()
+        if user_data_dir:
+            options.add_argument(f"--user-data-dir={user_data_dir}")
+        # options.add_argument("--disable-features=EdgeSignin")
+        options.add_argument("--disable-gpu")
+        options.add_argument("-headless")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        return options
+    
+    # Detecta se está rodando em .exe (PyInstaller)
+    def resource_path(relative_path):
+        if hasattr(sys, '_MEIPASS'):  # Quando compilado com PyInstaller
+            return os.path.join(sys._MEIPASS, relative_path)
+        return os.path.abspath(relative_path)
+    
+    if __get_architecture() == '32bit':
+        # print(f"\n\n Executando 32bits")
+        driver_path_firefox = resource_path("utils/firefox/32bits/geckodriver.exe")
+    else:
+        # print(f"\n\n Executando 64bits")
+        driver_path_firefox = resource_path("utils/firefox/64bits/geckodriver.exe")
+    
+    
+    try: 
+        service_firefox = webdriver.FirefoxService(driver_path_firefox)
+        driver_fox = webdriver.Firefox(service=service_firefox,options=build_options_fire())
+        # try:
+        #     driver_fox = webdriver.Firefox(service=service_firefox, options=build_options)
+        # except Exception as e: 
+        #     driver_fox = webdriver.Firefox(options=build_options)
+        
+        return driver_fox
+    
+    except WebDriverException as we: 
+        work.log(f"ocorreu um erro ao iniciar o driver do Firefox: \n{we}")
 
 # Correção de fora de area
 # def open_browser():
@@ -574,8 +627,17 @@ def _set_hundred_page(driver):
 
 
 def main():
+    driver = None
     try:
-        driver = open_browser()
+        if BROWSER == 'Edge':
+            driver = open_browser_edge()
+        else : 
+            driver = open_browser_firefox()
+        
+        if driver is None:
+            work.log("Não foi possivel encontrar o driver")
+            return
+                    
         driver.get(URL)
         
         if login(driver):
@@ -596,7 +658,7 @@ def main():
             
         driver.quit()
         
-    except Exception as e:
+    except ValueError as e:
         work.log(f"Ocorreu um erro na função main: {e} \n\n  ")
         driver.quit() 
          # Ensure the driver is terminated in case of an error
@@ -611,6 +673,6 @@ def main():
 if __name__ == "__main__":
 
     # main() # Call the main function
-    open_browser()  # Open the browser to test the function
+    open_browser_firefox()  # Open the browser to test the function
 
       

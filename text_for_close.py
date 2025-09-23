@@ -105,6 +105,7 @@ def delete_text_row(row):
         return f"Linha {row} inválida. Deve estar entre 1 e {len(lines)}."
 
 create_file_text()
+
 if __name__=='__main__':
     print("\n\n\n\n")
     delete = delete_text_row(20)
